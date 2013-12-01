@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgurPortable", "ImgurPortable\ImgurPortable.csproj", "{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgurPortablePlayground", "ImgurPortablePlayground\ImgurPortablePlayground.csproj", "{3A8F0553-86A7-414A-A574-FBFEE59EF35E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Release|ARM.ActiveCfg = Release|Any CPU
+		{E43CD2AC-AD2E-4469-BD62-65B41B7F3291}.Release|x86.ActiveCfg = Release|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|ARM.Build.0 = Debug|ARM
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|ARM.Deploy.0 = Debug|ARM
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|x86.ActiveCfg = Debug|x86
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|x86.Build.0 = Debug|x86
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Debug|x86.Deploy.0 = Debug|x86
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|ARM.ActiveCfg = Release|ARM
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|ARM.Build.0 = Release|ARM
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|ARM.Deploy.0 = Release|ARM
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|x86.ActiveCfg = Release|x86
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|x86.Build.0 = Release|x86
+		{3A8F0553-86A7-414A-A574-FBFEE59EF35E}.Release|x86.Deploy.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
