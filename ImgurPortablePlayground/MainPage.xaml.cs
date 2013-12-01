@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using ImgurPortable;
 using ImgurPortable.Entities;
 using ImgurPortable.Extensions;
 using Microsoft.Phone.Controls;
@@ -10,27 +9,31 @@ namespace ImgurPortablePlayground
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private readonly ImgurClient _client;
         // Constructor
         public MainPage()
         {
             InitializeComponent();
-            _client = new ImgurClient("0a453bcc555c72a", "990617fc34de37b8e4641e0b12bc9df8867dfad8");
+            
         }
 
         //0a453bcc555c72a
         //990617fc34de37b8e4641e0b12bc9df8867dfad8
         private void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var url = _client.GetAuthenticationUrl(AuthResponseType.Pin);
+            var url = App.ImgurClient.GetAuthenticationUrl(AuthResponseType.Token);
             new WebBrowserTask{Uri = new Uri(url, UriKind.Absolute)}.Show();
         }
 
         private async void PinButton_OnClick(object sender, RoutedEventArgs e)
         {
             var pin = string.Empty;
-            var token = await _client.GetAccessTokenFromPinAsync(pin);
-            _client.AddAccessToken(token.Token);
+            var token = await App.ImgurClient.GetAccessTokenFromPinAsync(pin);
+            App.ImgurClient.AddAccessToken(token.Token);
+        }
+
+        private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
         }
     }
 }

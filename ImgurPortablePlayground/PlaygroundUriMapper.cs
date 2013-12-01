@@ -11,6 +11,8 @@ namespace ImgurPortablePlayground
             if (uri.ToString().Contains("imgurportable"))
             {
                 var token = uri.GetAccessTokenInfo();
+                App.AccessToken = token;
+                App.ImgurClient.AddAccessToken(token.Token);
                 return new Uri("/MainPage.xaml", UriKind.Relative);
             }
 

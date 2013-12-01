@@ -4,6 +4,8 @@ using System.Resources;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
+using ImgurPortable;
+using ImgurPortable.Entities;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using ImgurPortablePlayground.Resources;
@@ -12,6 +14,10 @@ namespace ImgurPortablePlayground
 {
     public partial class App : Application
     {
+        public static AccessToken AccessToken { get; set; }
+
+        public static ImgurClient ImgurClient { get; set; }
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
@@ -55,6 +61,7 @@ namespace ImgurPortablePlayground
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            ImgurClient = new ImgurClient("0a453bcc555c72a", "990617fc34de37b8e4641e0b12bc9df8867dfad8");
         }
 
         // Code to execute when the application is launching (eg, from Start)

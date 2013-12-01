@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ImgurPortable.Entities
 {
-    public class ImgurResponse<TResponseType> where TResponseType : ImgurClass
+    public class ImgurResponse<TResponseType> 
     {
         [JsonProperty("data")]
         public TResponseType Response { get; set; }

@@ -51,6 +51,12 @@ namespace ImgurPortable
         /// </value>
         public string ClientId { get; private set; }
 
+        /// <summary>
+        /// Gets the client secret.
+        /// </summary>
+        /// <value>
+        /// The client secret.
+        /// </value>
         public string ClientSecret { get; private set; }
 
         /// <summary>
@@ -61,6 +67,7 @@ namespace ImgurPortable
         /// </value>
         public string AccessToken { get; internal set; }
 
+        #region Authorisation
         /// <summary>
         /// Gets the authentication URL.
         /// </summary>
@@ -131,6 +138,37 @@ namespace ImgurPortable
             return response;
         }
 
+        /// <summary>
+        /// Refreshes the tokenasync.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <returns>The access token object</returns>
+        public async Task<AccessToken> RefreshTokenasync(string refreshToken)
+        {
+            var postData = new Dictionary<string, string>
+            {
+                {"client_id", ClientId},
+                {"client_secret", ClientSecret},
+                {"grant_type", "refresh_token"},
+                {"refresh_token", refreshToken}
+            };
+
+            var response = await GetPostResponse<AccessToken>("oauth2/token", postData);
+
+            return response;
+        }
+
+        #endregion
+
+        public async Task<ImageCollection> GetUserImagesAsync(string username)
+        {
+            var method = string.Format("3/account/{0}/images/", username);
+
+            var response = await GetResponse<ImgurResponse<ImageCollection>>(method);
+
+            return response.Response;
+        }
+
         private async Task<TResponseType> GetPostResponse<TResponseType>(string method, Dictionary<string, string> postData)
         {
             var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
@@ -145,6 +183,22 @@ namespace ImgurPortable
 
             var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
 
+            return item;
+        }
+
+        private async Task<TResponseType> GetResponse<TResponseType>(string method)
+        {
+            var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new NotImplementedException();
+            }
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
             return item;
         }
     }

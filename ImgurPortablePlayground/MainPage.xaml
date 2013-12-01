@@ -54,6 +54,9 @@
                 <Button Content="With PIN"
                         x:Name="PinButton"
                         Click="PinButton_OnClick"/>
+                <Button Content="Image Count"
+                        x:Name="ImageButton"
+                        Click="ImageButton_OnClick"></Button>
             </StackPanel>
         </Grid>
 
