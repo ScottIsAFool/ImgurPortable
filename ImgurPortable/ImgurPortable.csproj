@@ -43,7 +43,11 @@
   <ItemGroup>
     <Compile Include="Entities\AccessToken.cs" />
     <Compile Include="Entities\Account.cs" />
+    <Compile Include="Entities\AccountSettings.cs" />
+    <Compile Include="Entities\AccountStats.cs" />
+    <Compile Include="Entities\Album.cs" />
     <Compile Include="Entities\AuthResponseType.cs" />
+    <Compile Include="Entities\Comment.cs" />
     <Compile Include="Entities\Error.cs" />
     <Compile Include="Entities\Image.cs" />
     <Compile Include="Entities\ImgurClass.cs" />

@@ -34,7 +34,7 @@ namespace ImgurPortablePlayground
         private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
         {
             //var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
-            await App.ImgurClient.GetAccountAsync(App.AccessToken.AccountUsername);
+            await App.ImgurClient.GetAccountStatsAsync(App.AccessToken.AccountUsername);
         }
     }
 }

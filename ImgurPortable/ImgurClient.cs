@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using ImgurPortable.Entities;
 using Newtonsoft.Json;
@@ -90,9 +91,12 @@ namespace ImgurPortable
         /// Gets the access token from pin asynchronous.
         /// </summary>
         /// <param name="pin">The pin.</param>
-        /// <returns>The access token object</returns>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// The access token object
+        /// </returns>
         /// <exception cref="System.ArgumentNullException">pin;A pin must be provided.</exception>
-        public async Task<AccessToken> GetAccessTokenFromPinAsync(string pin)
+        public async Task<AccessToken> GetAccessTokenFromPinAsync(string pin, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(pin))
             {
@@ -107,7 +111,7 @@ namespace ImgurPortable
                 {"pin", pin}
             };
 
-            var response = await GetPostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData, cancellationToken);
 
             return response;
         }
@@ -116,9 +120,12 @@ namespace ImgurPortable
         /// Gets the access token from code asynchronous.
         /// </summary>
         /// <param name="code">The code.</param>
-        /// <returns>The access token object</returns>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// The access token object
+        /// </returns>
         /// <exception cref="System.ArgumentNullException">code;A code must be provided.</exception>
-        public async Task<AccessToken> GetAccessTokenFromCodeAsync(string code)
+        public async Task<AccessToken> GetAccessTokenFromCodeAsync(string code, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(code))
             {
@@ -133,7 +140,7 @@ namespace ImgurPortable
                 {"code", code}
             };
 
-            var response = await GetPostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData, cancellationToken);
 
             return response;
         }
@@ -142,8 +149,11 @@ namespace ImgurPortable
         /// Refreshes the tokenasync.
         /// </summary>
         /// <param name="refreshToken">The refresh token.</param>
-        /// <returns>The access token object</returns>
-        public async Task<AccessToken> RefreshTokenasync(string refreshToken)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// The access token object
+        /// </returns>
+        public async Task<AccessToken> RefreshTokenasync(string refreshToken, CancellationToken cancellationToken = default(CancellationToken))
         {
             var postData = new Dictionary<string, string>
             {
@@ -153,7 +163,7 @@ namespace ImgurPortable
                 {"refresh_token", refreshToken}
             };
 
-            var response = await GetPostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData, cancellationToken);
 
             return response;
         }
@@ -162,7 +172,14 @@ namespace ImgurPortable
 
         #region Account
 
-        public async Task<Account> GetAccountAsync(string username)
+        /// <summary>
+        /// Gets the account async.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The account details of the specified user</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<Account> GetAccountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -171,25 +188,110 @@ namespace ImgurPortable
 
             var method = string.Format("3/account/{0}", username);
 
-            var response = await GetResponse<ImgurResponse<Account>>(method);
+            var response = await GetResponse<ImgurResponse<Account>>(method, cancellationToken);
 
             return response.Response;
         }
+
+        /// <summary>
+        /// Deletes the account async.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if deleted</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<bool> DeleteAccountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = string.Format("3/account/{0}", username);
+
+            var response = await DeleteResponse<ImgurResponse<bool>>(method, cancellationToken);
+
+            return response.Response;
+        }
+
+        /// <summary>
+        /// Gets the user gallery favourites async.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The image collection</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<ImageCollection> GetUserGalleryFavouritesAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = string.Format("3/account/{0}/gallery_favorites", username);
+
+            var response = await GetResponse<ImgurResponse<ImageCollection>>(method, cancellationToken);
+
+            return response.Response;
+        }
+
+        /// <summary>
+        /// Gets the account settings.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The account settings</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<AccountSettings> GetAccountSettingsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = string.Format("3/account/{0}/settings", username);
+
+            var response = await GetResponse<ImgurResponse<AccountSettings>>(method, cancellationToken);
+
+            return response.Response;
+        }
+
+        public async Task<AccountStats> GetAccountStatsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = string.Format("3/account/{0}/stats", username);
+
+            var response = await GetResponse<ImgurResponse<AccountStats>>(method, cancellationToken);
+
+            return response.Response;
+        }
+
+
         #endregion
 
-        public async Task<ImageCollection> GetUserImagesAsync(string username)
+        /// <summary>
+        /// Gets the user images async.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The collection of images</returns>
+        public async Task<ImageCollection> GetUserImagesAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             var method = string.Format("3/account/{0}/images/", username);
 
-            var response = await GetResponse<ImgurResponse<ImageCollection>>(method);
+            var response = await GetResponse<ImgurResponse<ImageCollection>>(method, cancellationToken);
 
             return response.Response;
         }
 
-        private async Task<TResponseType> GetPostResponse<TResponseType>(string method, Dictionary<string, string> postData)
+        private async Task<TResponseType> PostResponse<TResponseType>(string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
-            var response = await _httpClient.PostAsync(url, new FormUrlEncodedContent(postData));
+            var response = await _httpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -209,17 +311,40 @@ namespace ImgurPortable
             return item;
         }
 
-        private async Task<TResponseType> GetResponse<TResponseType>(string method)
+        private async Task<TResponseType> GetResponse<TResponseType>(string method, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
 
-            var response = await _httpClient.GetAsync(url);
+            var response = await _httpClient.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new NotImplementedException();
             }
             
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (responseString.Contains("\"success\": false"))
+            {
+                var error = JsonConvert.DeserializeObject<ImgurResponse<Error>>(responseString);
+                throw new ImgurException(error);
+            }
+
+            var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
+            return item;
+        }
+
+        private async Task<TResponseType> DeleteResponse<TResponseType>(string method, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
+
+            var response = await _httpClient.DeleteAsync(url, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new NotImplementedException();
+            }
+
             var responseString = await response.Content.ReadAsStringAsync();
 
             if (responseString.Contains("\"success\": false"))

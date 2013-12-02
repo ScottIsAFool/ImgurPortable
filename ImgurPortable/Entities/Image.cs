@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using PropertyChanged;
 
@@ -48,7 +47,7 @@ namespace ImgurPortable.Entities
         public object Nsfw { get; set; }
 
         [JsonProperty("section")]
-        public object Section { get; set; }
+        public string Section { get; set; }
 
         [JsonProperty("deletehash")]
         public string Deletehash { get; set; }
