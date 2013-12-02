@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using PropertyChanged;
 
 namespace ImgurPortable.Entities
@@ -39,7 +40,12 @@ namespace ImgurPortable.Entities
         [JsonProperty("images_count")]
         public int ImagesCount { get; set; }
 
+        [JsonProperty("deletehash")]
+        public string DeleteHash { get; set; }
+
         [JsonProperty("images")]
         public ImageCollection Images { get; set; }
     }
+
+    public class AlbumCollection : List<Album>{}
 }

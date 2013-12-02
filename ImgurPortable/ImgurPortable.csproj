@@ -70,11 +70,14 @@
     <Compile Include="Entities\AuthResponseType.cs" />
     <Compile Include="Entities\Comment.cs" />
     <Compile Include="Entities\Error.cs" />
+    <Compile Include="Entities\GalleryProfile.cs" />
     <Compile Include="Entities\Image.cs" />
     <Compile Include="Entities\ImgurClass.cs" />
     <Compile Include="Entities\ImgurException.cs" />
     <Compile Include="Entities\ImgurResponse.cs" />
     <Compile Include="Entities\StatusCode.cs" />
+    <Compile Include="Entities\TopGalleryComment.cs" />
+    <Compile Include="Entities\Trophy.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="ImgurClient.cs" />

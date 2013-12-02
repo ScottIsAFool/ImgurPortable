@@ -88,7 +88,7 @@ namespace ImgurPortable
         }
 
         /// <summary>
-        /// Gets the access token from pin asynchronous.
+        /// Gets the access token from pin.
         /// </summary>
         /// <param name="pin">The pin.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -117,7 +117,7 @@ namespace ImgurPortable
         }
 
         /// <summary>
-        /// Gets the access token from code asynchronous.
+        /// Gets the access token from code.
         /// </summary>
         /// <param name="code">The code.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -186,11 +186,7 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            var method = string.Format("3/account/{0}", username);
-
-            var response = await GetResponse<ImgurResponse<Account>>(method, cancellationToken);
-
-            return response.Response;
+            return await GetAccountObject<Account>(string.Empty, username, cancellationToken);
         }
 
         /// <summary>
@@ -228,11 +224,7 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            var method = string.Format("3/account/{0}/gallery_favorites", username);
-
-            var response = await GetResponse<ImgurResponse<ImageCollection>>(method, cancellationToken);
-
-            return response.Response;
+            return await GetAccountObject<ImageCollection>("gallery_favorites", username, cancellationToken);
         }
 
         /// <summary>
@@ -249,13 +241,16 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            var method = string.Format("3/account/{0}/settings", username);
-
-            var response = await GetResponse<ImgurResponse<AccountSettings>>(method, cancellationToken);
-
-            return response.Response;
+            return await GetAccountObject<AccountSettings>("settings", username, cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the account stats.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The account statistics for the specified user</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<AccountStats> GetAccountStatsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -263,13 +258,128 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            var method = string.Format("3/account/{0}/stats", username);
-
-            var response = await GetResponse<ImgurResponse<AccountStats>>(method, cancellationToken);
-
-            return response.Response;
+            return await GetAccountObject<AccountStats>("stats", username, cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the gallery profile.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The gallery profile for the specified user</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<GalleryProfile> GetGalleryProfileAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<GalleryProfile>("gallery_profile", username, cancellationToken);
+        }
+
+        public async Task<bool> GetUserHasVerifiedEmailAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<bool>("verifyemail", username, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends the email verification.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if successful request.</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<bool> SendEmailVerificationAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = string.Format("3/account/{0}/verifyemail", username);
+
+            return await PostResponse<bool>(method, new Dictionary<string, string>(), cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets all user albums.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>All the user's albums</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
+        public async Task<AlbumCollection> GetAllUserAlbumsAsync(string username, int? pageNumber = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = "albums";
+            if (pageNumber.HasValue)
+            {
+                method += "/" + pageNumber.Value;
+            }
+
+            return await GetAccountObject<AlbumCollection>(method, username, cancellationToken);
+        }
+
+        public async Task<List<string>> GetAllUserAlbumIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<List<string>>("albums/ids", username, cancellationToken);
+        }
+
+        public async Task<int> GetUserAlbumCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<int>("albums/count", username, cancellationToken);
+        }
+
+        public async Task<CommentCollection> GetUserCommentsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<CommentCollection>("comments", username, cancellationToken);
+        }
+
+        public async Task<List<string>> GetAllUserCommentIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<List<string>>("comments/ids", username, cancellationToken);
+        }
+
+        public async Task<int> GetUserCommentCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<int>("comments/count", username, cancellationToken);
+        }
 
         #endregion
 
@@ -284,6 +394,15 @@ namespace ImgurPortable
             var method = string.Format("3/account/{0}/images/", username);
 
             var response = await GetResponse<ImgurResponse<ImageCollection>>(method, cancellationToken);
+
+            return response.Response;
+        }
+
+        private async Task<TAccount> GetAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var fullMethod = string.Format("3/account/{0}/{1}", username, method);
+
+            var response = await GetResponse<ImgurResponse<TAccount>>(fullMethod, cancellationToken);
 
             return response.Response;
         }
