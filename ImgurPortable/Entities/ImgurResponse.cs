@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace ImgurPortable.Entities
 {
@@ -24,6 +23,6 @@ namespace ImgurPortable.Entities
         /// The status code.
         /// </value>
         [JsonProperty("status")]
-        public HttpStatusCode StatusCode { get; set; }
+        public StatusCode StatusCode { get; set; }
     }
 }

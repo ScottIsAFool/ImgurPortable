@@ -13,7 +13,7 @@ namespace ImgurPortable
     {
         private const string ImgurApiUrlBase = "https://api.imgur.com/";
         private const string ImgurAuthorisationEndPoint = ImgurApiUrlBase + "oauth2/authorize";
-        private const string ImgurAuthorisationTokenEndPoint = ImgurApiUrlBase + "oauth2/token";
+        private const string ImgurAuthorisationTokenEndPoint = "oauth2/token";
 
         internal readonly HttpClient _httpClient;
 
@@ -107,7 +107,7 @@ namespace ImgurPortable
                 {"pin", pin}
             };
 
-            var response = await GetPostResponse<AccessToken>("oauth2/token", postData);
+            var response = await GetPostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData);
 
             return response;
         }
@@ -133,7 +133,7 @@ namespace ImgurPortable
                 {"code", code}
             };
 
-            var response = await GetPostResponse<AccessToken>("oauth2/token", postData);
+            var response = await GetPostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData);
 
             return response;
         }
@@ -153,11 +153,28 @@ namespace ImgurPortable
                 {"refresh_token", refreshToken}
             };
 
-            var response = await GetPostResponse<AccessToken>("oauth2/token", postData);
+            var response = await GetPostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData);
 
             return response;
         }
 
+        #endregion
+
+        #region Account
+
+        public async Task<Account> GetAccountAsync(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = string.Format("3/account/{0}", username);
+
+            var response = await GetResponse<ImgurResponse<Account>>(method);
+
+            return response.Response;
+        }
         #endregion
 
         public async Task<ImageCollection> GetUserImagesAsync(string username)
@@ -181,6 +198,12 @@ namespace ImgurPortable
 
             var responseString = await response.Content.ReadAsStringAsync();
 
+            if (responseString.Contains("\"success\": false"))
+            {
+                var error = JsonConvert.DeserializeObject<ImgurResponse<Error>>(responseString);
+                throw new ImgurException(error);
+            }
+
             var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
 
             return item;
@@ -196,8 +219,15 @@ namespace ImgurPortable
             {
                 throw new NotImplementedException();
             }
-
+            
             var responseString = await response.Content.ReadAsStringAsync();
+
+            if (responseString.Contains("\"success\": false"))
+            {
+                var error = JsonConvert.DeserializeObject<ImgurResponse<Error>>(responseString);
+                throw new ImgurException(error);
+            }
+
             var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
             return item;
         }
