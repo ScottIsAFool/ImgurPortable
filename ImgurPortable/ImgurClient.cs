@@ -110,7 +110,7 @@ namespace ImgurPortable
                 {"pin", pin}
             };
 
-            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData, cancellationToken);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, cancellationToken);
 
             return response;
         }
@@ -139,7 +139,7 @@ namespace ImgurPortable
                 {"code", code}
             };
 
-            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData, cancellationToken);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, cancellationToken);
 
             return response;
         }
@@ -162,7 +162,7 @@ namespace ImgurPortable
                 {"refresh_token", refreshToken}
             };
 
-            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, postData, cancellationToken);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, cancellationToken);
 
             return response;
         }
@@ -185,7 +185,7 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<Account>(string.Empty, username, cancellationToken);
+            return await GetResponse<Account>("3/account", string.Empty, username, cancellationToken);
         }
 
         /// <summary>
@@ -471,28 +471,10 @@ namespace ImgurPortable
         }
 
         #endregion
-
-        private async Task<TAccount> GetAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
+        
+        private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var fullMethod = string.Format("3/account/{0}/{1}", username, method);
-
-            var response = await GetResponse<ImgurResponse<TAccount>>(fullMethod, cancellationToken);
-
-            return response.Response;
-        }
-
-        private async Task<TAccount> PostAccountObject<TAccount>(string method, string username, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var fullMethod = string.Format("3/account/{0}/{1}", username, method);
-
-            var response = await PostResponse<ImgurResponse<TAccount>>(fullMethod, postData, cancellationToken);
-
-            return response.Response;
-        }
-
-        private async Task<TResponseType> PostResponse<TResponseType>(string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
+            var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
             var response = await HttpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -513,9 +495,9 @@ namespace ImgurPortable
             return item;
         }
 
-        private async Task<TResponseType> GetResponse<TResponseType>(string method, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
+            var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
             var response = await HttpClient.GetAsync(url, cancellationToken);
 
@@ -536,9 +518,9 @@ namespace ImgurPortable
             return item;
         }
 
-        private async Task<TResponseType> DeleteResponse<TResponseType>(string method, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
+            var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
             var response = await HttpClient.DeleteAsync(url, cancellationToken);
 
@@ -559,11 +541,14 @@ namespace ImgurPortable
             return item;
         }
 
+        private static string GetAccountEndPoint(string username)
+        {
+            return string.Format("3/account/{0}", username);
+        }
+
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
         {
-            var httpClient = new HttpClient(handler == null
-                ? new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip }
-                : handler);
+            var httpClient = new HttpClient(handler ?? new HttpClientHandler { AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip });
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
 
