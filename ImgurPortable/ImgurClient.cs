@@ -185,7 +185,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetResponse<Account>("3/account", string.Empty, username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<Account>(endPoint, string.Empty, cancellationToken);
         }
 
         /// <summary>
@@ -202,11 +204,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            var method = string.Format("3/account/{0}", username);
+            var endPoint = GetAccountEndPoint(username);
 
-            var response = await DeleteResponse<ImgurResponse<bool>>(method, cancellationToken);
-
-            return response.Response;
+            return await DeleteResponse<bool>(endPoint, string.Empty, cancellationToken);
         }
 
         /// <summary>
@@ -223,7 +223,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<ImageCollection>("gallery_favorites", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<ImageCollection>(endPoint, "gallery_favorites", cancellationToken);
         }
 
         /// <summary>
@@ -240,7 +242,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<AccountSettings>("settings", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<AccountSettings>(endPoint, "settings", cancellationToken);
         }
 
         public async Task<bool> ChangeUserSettingsAsync(
@@ -284,7 +288,9 @@ namespace ImgurPortable
                 postData.Add("accepted_gallery_terms", acceptGalleryTerms.Value.ToString().ToLower());
             }
 
-            return await PostAccountObject<bool>("settings", username, postData, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await PostResponse<bool>(endPoint, "settings", postData, cancellationToken);
         }
 
         /// <summary>
@@ -301,7 +307,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<AccountStats>("stats", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<AccountStats>(endPoint, "stats", cancellationToken);
         }
 
         /// <summary>
@@ -318,7 +326,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<GalleryProfile>("gallery_profile", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<GalleryProfile>(endPoint, "gallery_profile", cancellationToken);
         }
 
         public async Task<bool> GetUserHasVerifiedEmailAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -328,7 +338,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<bool>("verifyemail", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<bool>(endPoint, "verifyemail", cancellationToken);
         }
 
         /// <summary>
@@ -345,9 +357,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            var method = string.Format("3/account/{0}/verifyemail", username);
-
-            return await PostResponse<bool>(method, new Dictionary<string, string>(), cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+            
+            return await PostResponse<bool>(endPoint, "verifyemail", new Dictionary<string, string>(), cancellationToken);
         }
 
         /// <summary>
@@ -371,7 +383,9 @@ namespace ImgurPortable
                 method += "/" + pageNumber.Value;
             }
 
-            return await GetAccountObject<AlbumCollection>(method, username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<AlbumCollection>(endPoint, method, cancellationToken);
         }
 
         public async Task<List<string>> GetUserAlbumIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -381,7 +395,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<List<string>>("albums/ids", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<List<string>>(endPoint, "albums/ids", cancellationToken);
         }
 
         public async Task<int> GetUserAlbumCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -391,7 +407,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<int>("albums/count", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<int>(endPoint, "albums/count", cancellationToken);
         }
 
         public async Task<CommentCollection> GetUserCommentsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -401,7 +419,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<CommentCollection>("comments", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<CommentCollection>(endPoint, "comments", cancellationToken);
         }
 
         public async Task<List<string>> GetUserCommentIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -411,7 +431,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<List<string>>("comments/ids", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<List<string>>(endPoint, "comments/ids", cancellationToken);
         }
 
         public async Task<int> GetUserCommentCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -421,7 +443,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<int>("comments/count", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<int>(endPoint, "comments/count", cancellationToken);
         }
 
         public async Task<CommentCollection> GetUserImagesAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -431,7 +455,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<CommentCollection>("images", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<CommentCollection>(endPoint, "images", cancellationToken);
         }
 
         public async Task<List<string>> GetUserImageIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -441,7 +467,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<List<string>>("images/ids", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<List<string>>(endPoint, "images/ids", cancellationToken);
         }
 
         public async Task<int> GetUserImageCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -451,7 +479,9 @@ namespace ImgurPortable
                 throw new ArgumentNullException("username", "Username cannot be null or empty");
             }
 
-            return await GetAccountObject<int>("images/count", username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<int>(endPoint, "images/count", cancellationToken);
         }
 
         public async Task<Notification> GetUserRepliesAsync(string username, bool? onlyUnread = true, CancellationToken cancellationToken = default(CancellationToken))
@@ -467,7 +497,9 @@ namespace ImgurPortable
                 method += "?new=false";
             }
 
-            return await GetAccountObject<Notification>(method, username, cancellationToken);
+            var endPoint = GetAccountEndPoint(username);
+
+            return await GetResponse<Notification>(endPoint, method, cancellationToken);
         }
 
         #endregion
@@ -544,6 +576,11 @@ namespace ImgurPortable
         private static string GetAccountEndPoint(string username)
         {
             return string.Format("3/account/{0}", username);
+        }
+
+        private static string GetAlbumEndPoint(string albumId)
+        {
+            return string.Format("3/album/{0}", albumId);
         }
 
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
