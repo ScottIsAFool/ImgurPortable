@@ -13,7 +13,7 @@ namespace ImgurPortable.Extensions
         public static ImgurClient AddAccessToken(this ImgurClient imgurClient, string accessToken)
         {
             imgurClient.AccessToken = accessToken;
-            imgurClient._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            imgurClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             return imgurClient;
         }
     }

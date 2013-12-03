@@ -10,13 +10,14 @@ using Newtonsoft.Json;
 
 namespace ImgurPortable
 {
-    public partial class ImgurClient
+    public class ImgurClient
     {
         private const string ImgurApiUrlBase = "https://api.imgur.com/";
         private const string ImgurAuthorisationEndPoint = ImgurApiUrlBase + "oauth2/authorize";
         private const string ImgurAuthorisationTokenEndPoint = "oauth2/token";
 
-        internal readonly HttpClient _httpClient;
+        internal readonly HttpClient HttpClient;
+        internal readonly HttpClient AnonHttpClient;
 
         public ImgurClient(string clientId, string clientSecret)
             : this(clientId, clientSecret, null)
@@ -34,16 +35,14 @@ namespace ImgurPortable
                 throw new ArgumentNullException("clientSecret", "Client secret cannot be null or empty");
             }
 
-            _httpClient = handler == null
-                ? _httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip })
-                : _httpClient = new HttpClient(handler);
-
             ClientId = clientId;
             ClientSecret = clientSecret;
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", ClientId);
+            HttpClient = CreateHttpClient(clientId, handler);
+            AnonHttpClient = CreateHttpClient(clientId, handler);
         }
 
+        
         /// <summary>
         /// Gets the client identifier.
         /// </summary>
@@ -244,6 +243,50 @@ namespace ImgurPortable
             return await GetAccountObject<AccountSettings>("settings", username, cancellationToken);
         }
 
+        public async Task<bool> ChangeUserSettingsAsync(
+            string username,
+            string bio = null,
+            bool? makeImagesPublic = null,
+            bool? allowPrivateMessages = null,
+            AlbumPrivacy? albumPrivacy = null,
+            bool? acceptGalleryTerms = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var postData = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(bio))
+            {
+                postData.Add("bio", bio);
+            }
+
+            if (makeImagesPublic.HasValue)
+            {
+                postData.Add("public_images", makeImagesPublic.Value ? "public" : "private");
+            }
+
+            if (allowPrivateMessages.HasValue)
+            {
+                postData.Add("messaging_enabled", allowPrivateMessages.Value.ToString().ToLower());
+            }
+
+            if (albumPrivacy.HasValue)
+            {
+                postData.Add("album_privacy", albumPrivacy.Value.ToString().ToLower());
+            }
+
+            if (acceptGalleryTerms.HasValue)
+            {
+                postData.Add("accepted_gallery_terms", acceptGalleryTerms.Value.ToString().ToLower());
+            }
+
+            return await PostAccountObject<bool>("settings", username, postData, cancellationToken);
+        }
+
         /// <summary>
         /// Gets the account stats.
         /// </summary>
@@ -438,20 +481,11 @@ namespace ImgurPortable
             return response.Response;
         }
 
-        private async Task<TAccount> DeleteAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TAccount> PostAccountObject<TAccount>(string method, string username, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
         {
             var fullMethod = string.Format("3/account/{0}/{1}", username, method);
 
-            var response = await DeleteResponse<ImgurResponse<TAccount>>(fullMethod, cancellationToken);
-
-            return response.Response;
-        }
-
-        private async Task<TAccount> PostAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var fullMethod = string.Format("3/account/{0}/{1}", username, method);
-
-            var response = await PostResponse<ImgurResponse<TAccount>>(fullMethod, new Dictionary<string, string>(), cancellationToken);
+            var response = await PostResponse<ImgurResponse<TAccount>>(fullMethod, postData, cancellationToken);
 
             return response.Response;
         }
@@ -459,7 +493,7 @@ namespace ImgurPortable
         private async Task<TResponseType> PostResponse<TResponseType>(string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
-            var response = await _httpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
+            var response = await HttpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -483,7 +517,7 @@ namespace ImgurPortable
         {
             var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
 
-            var response = await _httpClient.GetAsync(url, cancellationToken);
+            var response = await HttpClient.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -506,7 +540,7 @@ namespace ImgurPortable
         {
             var url = string.Format("{0}{1}", ImgurApiUrlBase, method);
 
-            var response = await _httpClient.DeleteAsync(url, cancellationToken);
+            var response = await HttpClient.DeleteAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -523,6 +557,17 @@ namespace ImgurPortable
 
             var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
             return item;
+        }
+
+        private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
+        {
+            var httpClient = new HttpClient(handler == null
+                ? new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip }
+                : handler);
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
+
+            return httpClient;
         }
     }
 }
