@@ -179,7 +179,7 @@ namespace ImgurPortable
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The account details of the specified user</returns>
         /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
-        public async Task<Account> GetAccountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<Account> GetUserAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -196,7 +196,7 @@ namespace ImgurPortable
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if deleted</returns>
         /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
-        public async Task<bool> DeleteAccountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> DeleteUserAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -234,7 +234,7 @@ namespace ImgurPortable
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The account settings</returns>
         /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
-        public async Task<AccountSettings> GetAccountSettingsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<AccountSettings> GetUserSettingsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -251,7 +251,7 @@ namespace ImgurPortable
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The account statistics for the specified user</returns>
         /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
-        public async Task<AccountStats> GetAccountStatsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<AccountStats> GetUserStatsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -315,7 +315,7 @@ namespace ImgurPortable
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>All the user's albums</returns>
         /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
-        public async Task<AlbumCollection> GetAllUserAlbumsAsync(string username, int? pageNumber = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<AlbumCollection> GetUserAlbumsAsync(string username, int? pageNumber = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -331,7 +331,7 @@ namespace ImgurPortable
             return await GetAccountObject<AlbumCollection>(method, username, cancellationToken);
         }
 
-        public async Task<List<string>> GetAllUserAlbumIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<List<string>> GetUserAlbumIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -361,7 +361,7 @@ namespace ImgurPortable
             return await GetAccountObject<CommentCollection>("comments", username, cancellationToken);
         }
 
-        public async Task<List<string>> GetAllUserCommentIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<List<string>> GetUserCommentIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -381,28 +381,77 @@ namespace ImgurPortable
             return await GetAccountObject<int>("comments/count", username, cancellationToken);
         }
 
-        #endregion
-
-        /// <summary>
-        /// Gets the user images async.
-        /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The collection of images</returns>
-        public async Task<ImageCollection> GetUserImagesAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CommentCollection> GetUserImagesAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var method = string.Format("3/account/{0}/images/", username);
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
 
-            var response = await GetResponse<ImgurResponse<ImageCollection>>(method, cancellationToken);
-
-            return response.Response;
+            return await GetAccountObject<CommentCollection>("images", username, cancellationToken);
         }
+
+        public async Task<List<string>> GetUserImageIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<List<string>>("images/ids", username, cancellationToken);
+        }
+
+        public async Task<int> GetUserImageCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            return await GetAccountObject<int>("images/count", username, cancellationToken);
+        }
+
+        public async Task<Notification> GetUserRepliesAsync(string username, bool? onlyUnread = true, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var method = "notifications/replies";
+            if (onlyUnread.HasValue && !onlyUnread.Value)
+            {
+                method += "?new=false";
+            }
+
+            return await GetAccountObject<Notification>(method, username, cancellationToken);
+        }
+
+        #endregion
 
         private async Task<TAccount> GetAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             var fullMethod = string.Format("3/account/{0}/{1}", username, method);
 
             var response = await GetResponse<ImgurResponse<TAccount>>(fullMethod, cancellationToken);
+
+            return response.Response;
+        }
+
+        private async Task<TAccount> DeleteAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var fullMethod = string.Format("3/account/{0}/{1}", username, method);
+
+            var response = await DeleteResponse<ImgurResponse<TAccount>>(fullMethod, cancellationToken);
+
+            return response.Response;
+        }
+
+        private async Task<TAccount> PostAccountObject<TAccount>(string method, string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var fullMethod = string.Format("3/account/{0}/{1}", username, method);
+
+            var response = await PostResponse<ImgurResponse<TAccount>>(fullMethod, new Dictionary<string, string>(), cancellationToken);
 
             return response.Response;
         }

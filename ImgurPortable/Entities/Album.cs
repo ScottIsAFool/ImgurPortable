@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using PropertyChanged;
 
@@ -14,10 +15,10 @@ namespace ImgurPortable.Entities
         public string Title { get; set; }
 
         [JsonProperty("description")]
-        public object Description { get; set; }
+        public string Description { get; set; }
 
         [JsonProperty("datetime")]
-        public int Datetime { get; set; }
+        public DateTime Datetime { get; set; }
 
         [JsonProperty("cover")]
         public string Cover { get; set; }
@@ -36,6 +37,21 @@ namespace ImgurPortable.Entities
 
         [JsonProperty("link")]
         public string Link { get; set; }
+
+        [JsonProperty("ups")]
+        public int Ups { get; set; }
+
+        [JsonProperty("downs")]
+        public int Downs { get; set; }
+
+        [JsonProperty("score")]
+        public int Score { get; set; }
+
+        [JsonProperty("is_album")]
+        public bool IsAlbum { get; set; }
+
+        [JsonProperty("vote")]
+        public string Vote { get; set; }
 
         [JsonProperty("images_count")]
         public int ImagesCount { get; set; }
