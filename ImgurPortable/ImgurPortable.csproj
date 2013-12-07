@@ -83,6 +83,7 @@
     <Compile Include="Entities\TopGalleryComment.cs" />
     <Compile Include="Entities\Trophy.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="ImgurClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
