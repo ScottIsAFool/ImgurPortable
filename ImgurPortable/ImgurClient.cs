@@ -683,7 +683,7 @@ namespace ImgurPortable
             string coverImageId = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await CreateAlbumInternal(string.Empty, imageIds, title, description, privacy, layout, coverImageId, HttpClient, cancellationToken);
+            return await CreateUpdateAlbumInternal(string.Empty, imageIds, title, description, privacy, layout, coverImageId, HttpClient, cancellationToken);
         }
 
         public async Task<Album> CreateNewAnonymousAlbumAsync(
@@ -707,7 +707,7 @@ namespace ImgurPortable
             string coverImageId = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await CreateAlbumInternal(string.Empty, imageIds, title, description, privacy, layout, coverImageId, AnonHttpClient, cancellationToken);
+            return await CreateUpdateAlbumInternal(string.Empty, imageIds, title, description, privacy, layout, coverImageId, AnonHttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -763,7 +763,7 @@ namespace ImgurPortable
                 throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
             }
 
-            return await CreateAlbumInternal(albumId, imageIds, title, description, privacy, layout, coverImageId, HttpClient, cancellationToken);
+            return await CreateUpdateAlbumInternal(albumId, imageIds, title, description, privacy, layout, coverImageId, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -813,7 +813,26 @@ namespace ImgurPortable
             string coverImageId = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await CreateAlbumInternal(deleteHash, imageIds, title, description, privacy, layout, coverImageId, AnonHttpClient, cancellationToken);
+            return await CreateUpdateAlbumInternal(deleteHash, imageIds, title, description, privacy, layout, coverImageId, AnonHttpClient, cancellationToken);
+        }
+
+        /// <summary>
+        /// Deletes the anonymous album asynchronous.
+        /// </summary>
+        /// <param name="deleteHash">The delete hash.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">deleteHash;Delete Hash cannot be null or empty</exception>
+        public async Task<bool> DeleteAnonymousAlbumAsync(string deleteHash, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(deleteHash))
+            {
+                throw new ArgumentNullException("deleteHash", "Delete Hash cannot be null or empty");
+            }
+
+            var endPoint = GetAlbumEndPoint(deleteHash);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, AnonHttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -979,12 +998,43 @@ namespace ImgurPortable
                 throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
             }
 
-            var ids = imageIds.ToCommaSeparated();
-            var endPoint = GetAlbumEndPoint(albumId);
+            return await RemoveImagesFromAlbumInternal(imageIds, albumId, HttpClient, cancellationToken);
+        }
 
-            var method = string.Format("remove_images?ids={0}", ids);
+        /// <summary>
+        /// Removes the images from album.
+        /// </summary>
+        /// <param name="images">The images.</param>
+        /// <param name="deleteHash">The delete hash.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> RemoveImagesFromAnonymousAlbumAsync(ImageCollection images, string deleteHash, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            if (string.IsNullOrEmpty(deleteHash))
+            {
+                throw new ArgumentNullException("deleteHash", "Delete Hash cannot be null or empty");
+            }
 
-            return await DeleteResponse<bool>(endPoint, method, HttpClient, cancellationToken);
+            return await RemoveImagesFromAnonymousAlbumAsync(images == null ? null : images.Select(x => x.Id), deleteHash, cancellationToken);
+        }
+
+        /// <summary>
+        /// Removes the images from album.
+        /// </summary>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="deleteHash">The delete hash.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> RemoveImagesFromAnonymousAlbumAsync(IEnumerable<string> imageIds, string deleteHash, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            if (string.IsNullOrEmpty(deleteHash))
+            {
+                throw new ArgumentNullException("deleteHash", "Delete Hash cannot be null or empty");
+            }
+
+            return await RemoveImagesFromAlbumInternal(imageIds, deleteHash, AnonHttpClient, cancellationToken);
         }
 
         #endregion
@@ -1109,8 +1159,54 @@ namespace ImgurPortable
         }
         #endregion
 
+
+
+        /// <summary>
+        /// Gets the image thumbnail.
+        /// </summary>
+        /// <param name="imageId">The image identifier.</param>
+        /// <param name="size">The size.</param>
+        /// <returns>The image's thumbnail URL</returns>
+        public static string GetImageThumbnail(string imageId, ThumbnailSize size)
+        {
+            var sizeString = string.Empty;
+            switch (size)
+            {
+                case ThumbnailSize.SmallSquare:
+                    sizeString = "s";
+                    break;
+                    case ThumbnailSize.BigSquare:
+                    sizeString = "b";
+                    break;
+                    case ThumbnailSize.SmallThumbnail:
+                    sizeString = "t";
+                    break;
+                    case ThumbnailSize.MediumThumbnail:
+                    sizeString = "m";
+                    break;
+                    case ThumbnailSize.LargeThumbnail:
+                    sizeString = "l";
+                    break;
+                    case ThumbnailSize.HugeThumbnail:
+                    sizeString = "h";
+                    break;
+            }
+
+            return GetImageUrlInternal(imageId, sizeString);
+        }
+
+        /// <summary>
+        /// Gets the image URL.
+        /// </summary>
+        /// <param name="imageId">The image identifier.</param>
+        /// <returns>The image's URL</returns>
+        public static string GetImageUrl(string imageId)
+        {
+            return GetImageUrlInternal(imageId, string.Empty);
+        }
+
         #region Internal Common Methods
-        internal async Task<Album> CreateAlbumInternal(string albumId, IEnumerable<string> imageIds, string title, string description, AlbumPrivacy? privacy, Layout? layout, string coverImageId, HttpClient httpClient, CancellationToken cancellationToken)
+        private async Task<Album> CreateUpdateAlbumInternal(string albumId, IEnumerable<string> imageIds, string title, string description, AlbumPrivacy? privacy, Layout? layout, string coverImageId, HttpClient httpClient, CancellationToken cancellationToken)
         {
             var postData = new Dictionary<string, string>();
 
@@ -1151,8 +1247,25 @@ namespace ImgurPortable
 
             return await GetAlbumAsync(album.Id, cancellationToken);
         }
+
+        private async Task<bool> RemoveImagesFromAlbumInternal(IEnumerable<string> imageIds, string albumId, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var ids = imageIds.ToCommaSeparated();
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            var method = string.Format("remove_images?ids={0}", ids);
+
+            return await DeleteResponse<bool>(endPoint, method, httpClient, cancellationToken);
+        }
+
+        private static string GetImageUrlInternal(string imageId, string size)
+        {
+            const string urlFormat = "http://i.imgur.com/{0}{1}.jpg";
+            return string.Format(urlFormat, imageId, size);
+        }
         #endregion
 
+        #region Web calls
         private static async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
@@ -1221,6 +1334,8 @@ namespace ImgurPortable
             var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
             return item.Response;
         }
+
+        #endregion
 
         private static string GetAccountEndPoint(string username)
         {

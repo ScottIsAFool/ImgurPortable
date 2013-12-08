@@ -84,6 +84,7 @@
     <Compile Include="Entities\Reply.cs" />
     <Compile Include="Entities\Sort.cs" />
     <Compile Include="Entities\StatusCode.cs" />
+    <Compile Include="Entities\ThumbnailSize.cs" />
     <Compile Include="Entities\TopGalleryComment.cs" />
     <Compile Include="Entities\Trophy.cs" />
     <Compile Include="Entities\Vote.cs" />
