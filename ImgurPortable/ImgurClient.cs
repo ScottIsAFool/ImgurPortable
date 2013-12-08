@@ -112,7 +112,7 @@ namespace ImgurPortable
                 {"pin", pin}
             };
 
-            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, cancellationToken);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, HttpClient, cancellationToken);
 
             return response;
         }
@@ -141,7 +141,7 @@ namespace ImgurPortable
                 {"code", code}
             };
 
-            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, cancellationToken);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, HttpClient, cancellationToken);
 
             return response;
         }
@@ -164,7 +164,7 @@ namespace ImgurPortable
                 {"refresh_token", refreshToken}
             };
 
-            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, cancellationToken);
+            var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, HttpClient, cancellationToken);
 
             return response;
         }
@@ -189,7 +189,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<Account>(endPoint, string.Empty, cancellationToken);
+            return await GetResponse<Account>(endPoint, string.Empty, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await DeleteResponse<bool>(endPoint, string.Empty, cancellationToken);
+            return await DeleteResponse<bool>(endPoint, string.Empty, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<ImageCollection>(endPoint, "gallery_favorites", cancellationToken);
+            return await GetResponse<ImageCollection>(endPoint, "gallery_favorites", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<AccountSettings>(endPoint, "settings", cancellationToken);
+            return await GetResponse<AccountSettings>(endPoint, "settings", HttpClient, cancellationToken);
         }
 
         public async Task<bool> ChangeUserSettingsAsync(
@@ -292,7 +292,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await PostResponse<bool>(endPoint, "settings", postData, cancellationToken);
+            return await PostResponse<bool>(endPoint, "settings", postData, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<AccountStats>(endPoint, "stats", cancellationToken);
+            return await GetResponse<AccountStats>(endPoint, "stats", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -330,7 +330,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<GalleryProfile>(endPoint, "gallery_profile", cancellationToken);
+            return await GetResponse<GalleryProfile>(endPoint, "gallery_profile", HttpClient, cancellationToken);
         }
 
         public async Task<bool> GetUserHasVerifiedEmailAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
@@ -342,7 +342,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<bool>(endPoint, "verifyemail", cancellationToken);
+            return await GetResponse<bool>(endPoint, "verifyemail", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await PostResponse<bool>(endPoint, "verifyemail", new Dictionary<string, string>(), cancellationToken);
+            return await PostResponse<bool>(endPoint, "verifyemail", new Dictionary<string, string>(), HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -387,7 +387,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<AlbumCollection>(endPoint, method, cancellationToken);
+            return await GetResponse<AlbumCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<List<string>>(endPoint, "albums/ids", cancellationToken);
+            return await GetResponse<List<string>>(endPoint, "albums/ids", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<int>(endPoint, "albums/count", cancellationToken);
+            return await GetResponse<int>(endPoint, "albums/count", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<CommentCollection>(endPoint, "comments", cancellationToken);
+            return await GetResponse<CommentCollection>(endPoint, "comments", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -463,7 +463,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<List<string>>(endPoint, "comments/ids", cancellationToken);
+            return await GetResponse<List<string>>(endPoint, "comments/ids", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<int>(endPoint, "comments/count", cancellationToken);
+            return await GetResponse<int>(endPoint, "comments/count", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -501,7 +501,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<CommentCollection>(endPoint, "images", cancellationToken);
+            return await GetResponse<CommentCollection>(endPoint, "images", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -520,7 +520,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<List<string>>(endPoint, "images/ids", cancellationToken);
+            return await GetResponse<List<string>>(endPoint, "images/ids", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<int>(endPoint, "images/count", cancellationToken);
+            return await GetResponse<int>(endPoint, "images/count", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -565,7 +565,7 @@ namespace ImgurPortable
 
             var endPoint = GetAccountEndPoint(username);
 
-            return await GetResponse<Notification>(endPoint, method, cancellationToken);
+            return await GetResponse<Notification>(endPoint, method, HttpClient, cancellationToken);
         }
 
         #endregion
@@ -588,7 +588,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            return await GetResponse<Album>(endPoint, string.Empty, cancellationToken);
+            return await GetResponse<Album>(endPoint, string.Empty, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -607,7 +607,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            return await GetResponse<ImageCollection>(endPoint, "images", cancellationToken);
+            return await GetResponse<ImageCollection>(endPoint, "images", HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -637,7 +637,7 @@ namespace ImgurPortable
             var endPoint = GetAlbumEndPoint(albumId);
             var method = string.Format("image/{0}", imageId);
 
-            return await GetResponse<ImageCollection>(endPoint, method, cancellationToken);
+            return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -718,7 +718,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(string.Empty);
 
-            var album = await PostResponse<Album>(endPoint, string.Empty, postData, cancellationToken);
+            var album = await PostResponse<Album>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
 
             return await GetAlbumAsync(album.Id, cancellationToken);
         }
@@ -811,7 +811,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            var album = await PostResponse<Album>(endPoint, string.Empty, postData, cancellationToken);
+            var album = await PostResponse<Album>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
 
             return await GetAlbumAsync(album.Id, cancellationToken);
         }
@@ -832,7 +832,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            return await DeleteResponse<bool>(endPoint, string.Empty, cancellationToken);
+            return await DeleteResponse<bool>(endPoint, string.Empty, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -851,7 +851,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            var response = await PostResponse<string>(endPoint, "favorite", new Dictionary<string, string>(), cancellationToken);
+            var response = await PostResponse<string>(endPoint, "favorite", new Dictionary<string, string>(), HttpClient, cancellationToken);
 
             return response != "unfavorited";
         }
@@ -899,7 +899,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            return await PostResponse<bool>(endPoint, string.Empty, postData, cancellationToken);
+            return await PostResponse<bool>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -943,7 +943,7 @@ namespace ImgurPortable
 
             var endPoint = GetAlbumEndPoint(albumId);
 
-            return await PostResponse<bool>(endPoint, "add", postData, cancellationToken);
+            return await PostResponse<bool>(endPoint, "add", postData, HttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -984,7 +984,7 @@ namespace ImgurPortable
 
             var method = string.Format("remove_images?ids={0}", ids);
 
-            return await DeleteResponse<bool>(endPoint, method, cancellationToken);
+            return await DeleteResponse<bool>(endPoint, method, HttpClient, cancellationToken);
         }
 
         #endregion
@@ -999,7 +999,7 @@ namespace ImgurPortable
 
             var endPoint = GetCommentEndPoint(commentId);
 
-            return await GetResponse<Comment>(endPoint, String.Empty, cancellationToken);
+            return await GetResponse<Comment>(endPoint, String.Empty, HttpClient, cancellationToken);
         }
 
         public async Task<Comment> CreateCommentAsync(string imageId, string comment, string parentId = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1027,7 +1027,7 @@ namespace ImgurPortable
 
             var endPoint = GetCommentEndPoint(string.Empty);
 
-            var response = await PostResponse<Comment>(endPoint, string.Empty, postData, cancellationToken);
+            var response = await PostResponse<Comment>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
 
             return await GetCommentAsync(response.Id, cancellationToken);
         }
@@ -1041,7 +1041,7 @@ namespace ImgurPortable
 
             var endPoint = GetCommentEndPoint(commentId);
 
-            return await DeleteResponse<bool>(endPoint, string.Empty, cancellationToken);
+            return await DeleteResponse<bool>(endPoint, string.Empty, HttpClient, cancellationToken);
         }
 
         public async Task<CommentCollection> GetCommentRepliesAsync(string commentId, CancellationToken cancellationToken = default(CancellationToken))
@@ -1053,7 +1053,7 @@ namespace ImgurPortable
 
             var endPoint = GetCommentEndPoint(commentId);
 
-            return await GetResponse<CommentCollection>(endPoint, "replies", cancellationToken);
+            return await GetResponse<CommentCollection>(endPoint, "replies", HttpClient, cancellationToken);
         }
 
         public async Task<bool> VoteOnCommentAsync(string commentId, Vote vote, CancellationToken cancellationToken = default(CancellationToken))
@@ -1066,7 +1066,7 @@ namespace ImgurPortable
             var endPoint = GetCommentEndPoint(commentId);
             var method = string.Format("vote/{0}", vote.ToLower());
 
-            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), cancellationToken);
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken);
         }
 
         public async Task<bool> ReportCommentAsync(string commentId, CancellationToken cancellationToken = default(CancellationToken))
@@ -1078,7 +1078,7 @@ namespace ImgurPortable
 
             var endPoint = GetCommentEndPoint(commentId);
 
-            return await PostResponse<bool>(endPoint, "report", new Dictionary<string, string>(), cancellationToken);
+            return await PostResponse<bool>(endPoint, "report", new Dictionary<string, string>(), HttpClient, cancellationToken);
         }
 
         public async Task<bool> AddReplyToCommentAsync(string commentId, string imageId, string comment, CancellationToken cancellationToken = default(CancellationToken))
@@ -1105,14 +1105,14 @@ namespace ImgurPortable
                 { "comment", comment }
             };
 
-            return await PostResponse<bool>(endPoint, string.Empty, postData, cancellationToken);
+            return await PostResponse<bool>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
         }
         #endregion
 
-        private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
+        private static async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
-            var response = await HttpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
+            var response = await httpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -1132,11 +1132,11 @@ namespace ImgurPortable
             return item.Response;
         }
 
-        private async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, CancellationToken cancellationToken = default(CancellationToken))
+        private static async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
-            var response = await HttpClient.GetAsync(url, cancellationToken);
+            var response = await httpClient.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -1155,11 +1155,11 @@ namespace ImgurPortable
             return item.Response;
         }
 
-        private async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, CancellationToken cancellationToken = default(CancellationToken))
+        private static async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
-            var response = await HttpClient.DeleteAsync(url, cancellationToken);
+            var response = await httpClient.DeleteAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -1191,6 +1191,11 @@ namespace ImgurPortable
         private static string GetCommentEndPoint(string commentId)
         {
             return string.Format("3/comment/{0}", commentId);
+        }
+
+        private static string GetGalleryEndPoint(string section)
+        {
+            return string.Format("3/gallery/{0}", section);
         }
 
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
