@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using ImgurPortable.Entities;
+using ImgurPortable.Extensions;
 using Newtonsoft.Json;
 
 namespace ImgurPortable
@@ -42,7 +44,7 @@ namespace ImgurPortable
             AnonHttpClient = CreateHttpClient(clientId, handler);
         }
 
-        
+
         /// <summary>
         /// Gets the client identifier.
         /// </summary>
@@ -76,7 +78,7 @@ namespace ImgurPortable
         /// <returns>The authentication URL</returns>
         public string GetAuthenticationUrl(AuthResponseType authResponseType, string state = null)
         {
-            var url = string.Format("{0}?response_type={1}&client_id={2}", ImgurAuthorisationEndPoint, authResponseType.ToString().ToLower(), ClientId);
+            var url = string.Format("{0}?response_type={1}&client_id={2}", ImgurAuthorisationEndPoint, authResponseType.ToLower(), ClientId);
 
             if (!string.IsNullOrEmpty(state))
             {
@@ -275,17 +277,17 @@ namespace ImgurPortable
 
             if (allowPrivateMessages.HasValue)
             {
-                postData.Add("messaging_enabled", allowPrivateMessages.Value.ToString().ToLower());
+                postData.Add("messaging_enabled", allowPrivateMessages.Value.ToLower());
             }
 
             if (albumPrivacy.HasValue)
             {
-                postData.Add("album_privacy", albumPrivacy.Value.ToString().ToLower());
+                postData.Add("album_privacy", albumPrivacy.Value.ToLower());
             }
 
             if (acceptGalleryTerms.HasValue)
             {
-                postData.Add("accepted_gallery_terms", acceptGalleryTerms.Value.ToString().ToLower());
+                postData.Add("accepted_gallery_terms", acceptGalleryTerms.Value.ToLower());
             }
 
             var endPoint = GetAccountEndPoint(username);
@@ -358,7 +360,7 @@ namespace ImgurPortable
             }
 
             var endPoint = GetAccountEndPoint(username);
-            
+
             return await PostResponse<bool>(endPoint, "verifyemail", new Dictionary<string, string>(), cancellationToken);
         }
 
@@ -388,6 +390,13 @@ namespace ImgurPortable
             return await GetResponse<AlbumCollection>(endPoint, method, cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user album ids.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The album ids</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<List<string>> GetUserAlbumIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -400,6 +409,13 @@ namespace ImgurPortable
             return await GetResponse<List<string>>(endPoint, "albums/ids", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user album count.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The number of albums</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<int> GetUserAlbumCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -412,6 +428,13 @@ namespace ImgurPortable
             return await GetResponse<int>(endPoint, "albums/count", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user comments.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The comments that user has made</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<CommentCollection> GetUserCommentsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -424,6 +447,13 @@ namespace ImgurPortable
             return await GetResponse<CommentCollection>(endPoint, "comments", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user comment ids.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The commend Ids for that user</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<List<string>> GetUserCommentIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -436,6 +466,13 @@ namespace ImgurPortable
             return await GetResponse<List<string>>(endPoint, "comments/ids", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user comment count.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The number of comments that user has made</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<int> GetUserCommentCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -448,6 +485,13 @@ namespace ImgurPortable
             return await GetResponse<int>(endPoint, "comments/count", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user images.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The images that user has uploaded</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<CommentCollection> GetUserImagesAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -460,6 +504,13 @@ namespace ImgurPortable
             return await GetResponse<CommentCollection>(endPoint, "images", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user image ids.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The image ids for that user</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<List<string>> GetUserImageIdsAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -472,6 +523,13 @@ namespace ImgurPortable
             return await GetResponse<List<string>>(endPoint, "images/ids", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user image count.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The number of images for that user</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<int> GetUserImageCountAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -484,6 +542,14 @@ namespace ImgurPortable
             return await GetResponse<int>(endPoint, "images/count", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the user replies.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="onlyUnread">The only unread.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The replies that user has submitted</returns>
+        /// <exception cref="System.ArgumentNullException">username;Username cannot be null or empty</exception>
         public async Task<Notification> GetUserRepliesAsync(string username, bool? onlyUnread = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(username))
@@ -503,7 +569,340 @@ namespace ImgurPortable
         }
 
         #endregion
-        
+
+        #region Album
+
+        /// <summary>
+        /// Gets the album.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The specified album</returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<Album> GetAlbumAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            return await GetResponse<Album>(endPoint, string.Empty, cancellationToken);
+        }
+
+        public async Task<ImageCollection> GetAlbumImagesAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            return await GetResponse<ImageCollection>(endPoint, "images", cancellationToken);
+        }
+
+        public async Task<ImageCollection> GetAlbumImageAsync(string albumId, string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+            var method = string.Format("image/{0}", imageId);
+
+            return await GetResponse<ImageCollection>(endPoint, method, cancellationToken);
+        }
+
+        public async Task<Album> CreateNewAlbumAsync(
+            ImageCollection images = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await CreateNewAlbumAsync(images == null ? null : images.Select(x => x.Id), title, description, privacy, layout, coverImageId, cancellationToken);
+        }
+
+        public async Task<Album> CreateNewAlbumAsync(
+            IEnumerable<string> imageIds = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var postData = new Dictionary<string, string>();
+
+            if (imageIds != null)
+            {
+                var ids = imageIds.ToCommaSeparated();
+                postData.Add("ids", ids);
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+            if (privacy.HasValue)
+            {
+                postData.Add("privacy", privacy.Value.ToLower());
+            }
+
+            if (layout.HasValue)
+            {
+                postData.Add("layout", layout.Value.ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(coverImageId))
+            {
+                postData.Add("cover", coverImageId);
+            }
+
+            var endPoint = GetAlbumEndPoint(string.Empty);
+
+            var album = await PostResponse<Album>(endPoint, string.Empty, postData, cancellationToken);
+
+            return await GetAlbumAsync(album.Id, cancellationToken);
+        }
+
+        public async Task<Album> UpdateAlbumAsync(
+            string albumId,
+            ImageCollection images = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await UpdateAlbumAsync(albumId, images == null ? null : images.Select(x => x.Id), title, description, privacy, layout, coverImageId, cancellationToken);
+        }
+
+        public async Task<Album> UpdateAlbumAsync(
+            string albumId,
+            IEnumerable<string> imageIds = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var postData = new Dictionary<string, string>();
+
+            if (imageIds != null)
+            {
+                var ids = imageIds.ToCommaSeparated();
+                postData.Add("ids", ids);
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+            if (privacy.HasValue)
+            {
+                postData.Add("privacy", privacy.Value.ToLower());
+            }
+
+            if (layout.HasValue)
+            {
+                postData.Add("layout", layout.Value.ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(coverImageId))
+            {
+                postData.Add("cover", coverImageId);
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            var album = await PostResponse<Album>(endPoint, string.Empty, postData, cancellationToken);
+
+            return await GetAlbumAsync(album.Id, cancellationToken);
+        }
+
+        public async Task<bool> DeleteAlbumAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, cancellationToken);
+        }
+
+        /// <summary>
+        /// Favourites the album asynchronous.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if the album is favourited, false if unfavourited</returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> FavouriteAlbumAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            var response = await PostResponse<string>(endPoint, "favorite", new Dictionary<string, string>(), cancellationToken);
+
+            return response != "unfavorited";
+        }
+
+        /// <summary>
+        /// Sets the album images.
+        /// NOTE: Sets the images for an album, removes all other images and only uses the images in this request
+        /// </summary>
+        /// <param name="images">The images.</param>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if images set successfully</returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> SetAlbumImagesAsync(ImageCollection images, string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            return await SetAlbumImagesAsync(images.Select(x => x.Id), albumId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sets the album images.
+        /// NOTE: Sets the images for an album, removes all other images and only uses the images in this request
+        /// </summary>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if images set successfully</returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> SetAlbumImagesAsync(IEnumerable<string> imageIds, string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var ids = imageIds.ToCommaSeparated();
+            var postData = new Dictionary<string, string>
+            {
+                {"ids", ids}
+            };
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            return await PostResponse<bool>(endPoint, string.Empty, postData, cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the images to album.
+        /// </summary>
+        /// <param name="images">The images.</param>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if images added successfully</returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> AddImagesToAlbumAsync(ImageCollection images, string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            return await AddImagesToAlbumAsync(images.Select(x => x.Id), albumId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Adds the images to the album.
+        /// </summary>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if images added successfully</returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
+        public async Task<bool> AddImagesToAlbumAsync(IEnumerable<string> imageIds, string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var ids = imageIds.ToCommaSeparated();
+            var postData = new Dictionary<string, string>
+            {
+                {"ids", ids}
+            };
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            return await PostResponse<bool>(endPoint, "add", postData, cancellationToken);
+        }
+
+        public async Task<bool> RemoveImagesFromAlbumAsync(ImageCollection images, string albumId, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            return await RemoveImagesFromAlbumAsync(images == null ? null : images.Select(x => x.Id), albumId, cancellationToken);
+        }
+
+        public async Task<bool> RemoveImagesFromAlbumAsync(IEnumerable<string> imageIds, string albumId, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var ids = imageIds.ToCommaSeparated();
+            var postData = new Dictionary<string, string>
+            {
+                {"ids", ids}
+            };
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            return await DeleteResponse<bool>(endPoint, "remove_images", cancellationToken);
+        }
+
+        #endregion
+
         private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
@@ -537,7 +936,7 @@ namespace ImgurPortable
             {
                 throw new NotImplementedException();
             }
-            
+
             var responseString = await response.Content.ReadAsStringAsync();
 
             if (responseString.Contains("\"success\": false"))

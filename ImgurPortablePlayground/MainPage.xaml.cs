@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using ImgurPortable.Entities;
 using ImgurPortable.Extensions;
@@ -34,7 +35,7 @@ namespace ImgurPortablePlayground
         private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
         {
             //var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
-            await App.ImgurClient.GetAllUserAlbumIdsAsync(App.AccessToken.AccountUsername);
+            await App.ImgurClient.AddImagesToAlbumAsync(TODO, "yioyz");
         }
     }
 }

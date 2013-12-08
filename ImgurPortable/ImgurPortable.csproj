@@ -76,12 +76,14 @@
     <Compile Include="Entities\ImgurClass.cs" />
     <Compile Include="Entities\ImgurException.cs" />
     <Compile Include="Entities\ImgurResponse.cs" />
+    <Compile Include="Entities\Layout.cs" />
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\Notification.cs" />
     <Compile Include="Entities\Reply.cs" />
     <Compile Include="Entities\StatusCode.cs" />
     <Compile Include="Entities\TopGalleryComment.cs" />
     <Compile Include="Entities\Trophy.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
