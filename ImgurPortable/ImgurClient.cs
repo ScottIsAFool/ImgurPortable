@@ -683,44 +683,31 @@ namespace ImgurPortable
             string coverImageId = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var postData = new Dictionary<string, string>();
+            return await CreateAlbumInternal(string.Empty, imageIds, title, description, privacy, layout, coverImageId, HttpClient, cancellationToken);
+        }
 
-            if (imageIds != null)
-            {
-                var ids = imageIds.ToCommaSeparated();
-                postData.Add("ids", ids);
-            }
+        public async Task<Album> CreateNewAnonymousAlbumAsync(
+            ImageCollection images,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await CreateNewAnonymousAlbumAsync(images == null ? null : images.Select(x => x.Id), title, description, privacy, layout, coverImageId, cancellationToken);
+        }
 
-            if (!string.IsNullOrEmpty(title))
-            {
-                postData.Add("title", title);
-            }
-
-            if (!string.IsNullOrEmpty(description))
-            {
-                postData.Add("description", description);
-            }
-
-            if (privacy.HasValue)
-            {
-                postData.Add("privacy", privacy.Value.ToLower());
-            }
-
-            if (layout.HasValue)
-            {
-                postData.Add("layout", layout.Value.ToLower());
-            }
-
-            if (!string.IsNullOrEmpty(coverImageId))
-            {
-                postData.Add("cover", coverImageId);
-            }
-
-            var endPoint = GetAlbumEndPoint(string.Empty);
-
-            var album = await PostResponse<Album>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
-
-            return await GetAlbumAsync(album.Id, cancellationToken);
+        public async Task<Album> CreateNewAnonymousAlbumAsync(
+            IEnumerable<string> imageIds = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await CreateAlbumInternal(string.Empty, imageIds, title, description, privacy, layout, coverImageId, AnonHttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -776,44 +763,57 @@ namespace ImgurPortable
                 throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
             }
 
-            var postData = new Dictionary<string, string>();
+            return await CreateAlbumInternal(albumId, imageIds, title, description, privacy, layout, coverImageId, HttpClient, cancellationToken);
+        }
 
-            if (imageIds != null)
-            {
-                var ids = imageIds.ToCommaSeparated();
-                postData.Add("ids", ids);
-            }
+        /// <summary>
+        /// Updates the album.
+        /// </summary>
+        /// <param name="deleteHash">The delete hash.</param>
+        /// <param name="images">The images.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="privacy">The privacy.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="coverImageId">The cover image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<Album> UpdateAnonymousAlbumAsync(
+            string deleteHash,
+            ImageCollection images = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await UpdateAlbumAsync(deleteHash, images == null ? null : images.Select(x => x.Id), title, description, privacy, layout, coverImageId, cancellationToken);
+        }
 
-            if (!string.IsNullOrEmpty(title))
-            {
-                postData.Add("title", title);
-            }
-
-            if (!string.IsNullOrEmpty(description))
-            {
-                postData.Add("description", description);
-            }
-
-            if (privacy.HasValue)
-            {
-                postData.Add("privacy", privacy.Value.ToLower());
-            }
-
-            if (layout.HasValue)
-            {
-                postData.Add("layout", layout.Value.ToLower());
-            }
-
-            if (!string.IsNullOrEmpty(coverImageId))
-            {
-                postData.Add("cover", coverImageId);
-            }
-
-            var endPoint = GetAlbumEndPoint(albumId);
-
-            var album = await PostResponse<Album>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
-
-            return await GetAlbumAsync(album.Id, cancellationToken);
+        /// <summary>
+        /// Updates the album.
+        /// </summary>
+        /// <param name="deleteHash">The delete hash.</param>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="privacy">The privacy.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="coverImageId">The cover image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<Album> UpdateAnonymousAlbumAsync(
+            string deleteHash,
+            IEnumerable<string> imageIds = null,
+            string title = null,
+            string description = null,
+            AlbumPrivacy? privacy = null,
+            Layout? layout = null,
+            string coverImageId = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await CreateAlbumInternal(deleteHash, imageIds, title, description, privacy, layout, coverImageId, AnonHttpClient, cancellationToken);
         }
 
         /// <summary>
@@ -1106,6 +1106,50 @@ namespace ImgurPortable
             };
 
             return await PostResponse<bool>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
+        }
+        #endregion
+
+        #region Internal Common Methods
+        internal async Task<Album> CreateAlbumInternal(string albumId, IEnumerable<string> imageIds, string title, string description, AlbumPrivacy? privacy, Layout? layout, string coverImageId, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var postData = new Dictionary<string, string>();
+
+            if (imageIds != null)
+            {
+                var ids = imageIds.ToCommaSeparated();
+                postData.Add("ids", ids);
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+            if (privacy.HasValue)
+            {
+                postData.Add("privacy", privacy.Value.ToLower());
+            }
+
+            if (layout.HasValue)
+            {
+                postData.Add("layout", layout.Value.ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(coverImageId))
+            {
+                postData.Add("cover", coverImageId);
+            }
+
+            var endPoint = GetAlbumEndPoint(albumId);
+
+            var album = await PostResponse<Album>(endPoint, string.Empty, postData, httpClient, cancellationToken);
+
+            return await GetAlbumAsync(album.Id, cancellationToken);
         }
         #endregion
 
