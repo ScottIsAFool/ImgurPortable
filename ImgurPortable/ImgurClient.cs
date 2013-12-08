@@ -591,6 +591,13 @@ namespace ImgurPortable
             return await GetResponse<Album>(endPoint, string.Empty, cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the album images.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
         public async Task<ImageCollection> GetAlbumImagesAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(albumId))
@@ -603,6 +610,18 @@ namespace ImgurPortable
             return await GetResponse<ImageCollection>(endPoint, "images", cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the album image.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="imageId">The image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// albumId;Album ID cannot be null or empty
+        /// or
+        /// imageId;Image ID cannot be null or empty
+        /// </exception>
         public async Task<ImageCollection> GetAlbumImageAsync(string albumId, string imageId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(albumId))
@@ -621,6 +640,17 @@ namespace ImgurPortable
             return await GetResponse<ImageCollection>(endPoint, method, cancellationToken);
         }
 
+        /// <summary>
+        /// Creates the new album.
+        /// </summary>
+        /// <param name="images">The images.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="privacy">The privacy.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="coverImageId">The cover image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<Album> CreateNewAlbumAsync(
             ImageCollection images = null,
             string title = null,
@@ -633,6 +663,17 @@ namespace ImgurPortable
             return await CreateNewAlbumAsync(images == null ? null : images.Select(x => x.Id), title, description, privacy, layout, coverImageId, cancellationToken);
         }
 
+        /// <summary>
+        /// Creates the new album.
+        /// </summary>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="privacy">The privacy.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="coverImageId">The cover image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<Album> CreateNewAlbumAsync(
             IEnumerable<string> imageIds = null,
             string title = null,
@@ -682,6 +723,18 @@ namespace ImgurPortable
             return await GetAlbumAsync(album.Id, cancellationToken);
         }
 
+        /// <summary>
+        /// Updates the album.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="images">The images.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="privacy">The privacy.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="coverImageId">The cover image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public async Task<Album> UpdateAlbumAsync(
             string albumId,
             ImageCollection images = null,
@@ -695,6 +748,19 @@ namespace ImgurPortable
             return await UpdateAlbumAsync(albumId, images == null ? null : images.Select(x => x.Id), title, description, privacy, layout, coverImageId, cancellationToken);
         }
 
+        /// <summary>
+        /// Updates the album.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="privacy">The privacy.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="coverImageId">The cover image identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
         public async Task<Album> UpdateAlbumAsync(
             string albumId,
             IEnumerable<string> imageIds = null,
@@ -750,6 +816,13 @@ namespace ImgurPortable
             return await GetAlbumAsync(album.Id, cancellationToken);
         }
 
+        /// <summary>
+        /// Deletes the album.
+        /// </summary>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
         public async Task<bool> DeleteAlbumAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(albumId))
@@ -763,7 +836,7 @@ namespace ImgurPortable
         }
 
         /// <summary>
-        /// Favourites the album asynchronous.
+        /// Favourites the album.
         /// </summary>
         /// <param name="albumId">The album identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -873,6 +946,14 @@ namespace ImgurPortable
             return await PostResponse<bool>(endPoint, "add", postData, cancellationToken);
         }
 
+        /// <summary>
+        /// Removes the images from album.
+        /// </summary>
+        /// <param name="images">The images.</param>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
         public async Task<bool> RemoveImagesFromAlbumAsync(ImageCollection images, string albumId, CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrEmpty(albumId))
@@ -883,6 +964,14 @@ namespace ImgurPortable
             return await RemoveImagesFromAlbumAsync(images == null ? null : images.Select(x => x.Id), albumId, cancellationToken);
         }
 
+        /// <summary>
+        /// Removes the images from album.
+        /// </summary>
+        /// <param name="imageIds">The image ids.</param>
+        /// <param name="albumId">The album identifier.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">albumId;Album ID cannot be null or empty</exception>
         public async Task<bool> RemoveImagesFromAlbumAsync(IEnumerable<string> imageIds, string albumId, CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrEmpty(albumId))
@@ -891,14 +980,11 @@ namespace ImgurPortable
             }
 
             var ids = imageIds.ToCommaSeparated();
-            var postData = new Dictionary<string, string>
-            {
-                {"ids", ids}
-            };
-
             var endPoint = GetAlbumEndPoint(albumId);
 
-            return await DeleteResponse<bool>(endPoint, "remove_images", cancellationToken);
+            var method = string.Format("remove_images?ids={0}", ids);
+
+            return await DeleteResponse<bool>(endPoint, method, cancellationToken);
         }
 
         #endregion
