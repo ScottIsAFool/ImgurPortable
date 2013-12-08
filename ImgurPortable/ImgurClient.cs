@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -1159,7 +1160,123 @@ namespace ImgurPortable
         }
         #endregion
 
+        public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var type = ImageUploadType.File;
+            return null;
+        }
 
+        public async Task<Image> UploadImageAsync(string image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var type = ImageUploadType.Base64;
+            return null;
+        }
+
+        public async Task<Image> UploadImageAsync(Uri imageUrl, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var type = ImageUploadType.Url;
+            return null;
+        }
+
+        public async Task<Image> GetImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetImageEndPoint(imageId);
+
+            return await GetResponse<Image>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> DeleteImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetImageEndPoint(imageId);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> DeleteAnonymousImageAsync(string deleteHash, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(deleteHash))
+            {
+                throw new ArgumentNullException("deleteHash", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetImageEndPoint(deleteHash);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, AnonHttpClient, cancellationToken);
+        }
+
+        public async Task<Image> UpdateImageAsync(string imageId, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetImageEndPoint(imageId);
+            var postData = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+            var response = await PostResponse<Image>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
+
+            return await GetImageAsync(response.Id, cancellationToken);
+        }
+
+        public async Task<Image> UpdateAnonymousImageAsync(string deleteHash, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(deleteHash))
+            {
+                throw new ArgumentNullException("deleteHash", "Delete Hash cannot be null or empty");
+            }
+
+            var endPoint = GetImageEndPoint(deleteHash);
+            var postData = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+            var response = await PostResponse<Image>(endPoint, string.Empty, postData, AnonHttpClient, cancellationToken);
+
+            return await GetImageAsync(response.Id, cancellationToken);
+        }
+
+        public async Task<bool> FavouriteImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetImageEndPoint(imageId);
+
+            var response = await PostResponse<string>(endPoint, "favorite", new Dictionary<string, string>(), HttpClient, cancellationToken);
+
+            return response != "unfavorite";
+        }
 
         /// <summary>
         /// Gets the image thumbnail.
@@ -1355,6 +1472,11 @@ namespace ImgurPortable
         private static string GetGalleryEndPoint(string section)
         {
             return string.Format("3/gallery/{0}", section);
+        }
+
+        private static string GetImageEndPoint(string imageId)
+        {
+            return string.Format("3/image/{0}", imageId);
         }
 
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
