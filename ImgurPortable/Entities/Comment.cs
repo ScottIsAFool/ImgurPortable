@@ -8,7 +8,7 @@ namespace ImgurPortable.Entities
     public class Comment
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("image_id")]
         public string ImageId { get; set; }

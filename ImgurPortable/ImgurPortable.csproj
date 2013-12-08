@@ -70,8 +70,10 @@
     <Compile Include="Entities\AlbumPrivacy.cs" />
     <Compile Include="Entities\AuthResponseType.cs" />
     <Compile Include="Entities\Comment.cs" />
+    <Compile Include="Entities\DateRange.cs" />
     <Compile Include="Entities\Error.cs" />
     <Compile Include="Entities\GalleryProfile.cs" />
+    <Compile Include="Entities\GallerySection.cs" />
     <Compile Include="Entities\Image.cs" />
     <Compile Include="Entities\ImgurClass.cs" />
     <Compile Include="Entities\ImgurException.cs" />
@@ -80,9 +82,11 @@
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\Notification.cs" />
     <Compile Include="Entities\Reply.cs" />
+    <Compile Include="Entities\Sort.cs" />
     <Compile Include="Entities\StatusCode.cs" />
     <Compile Include="Entities\TopGalleryComment.cs" />
     <Compile Include="Entities\Trophy.cs" />
+    <Compile Include="Entities\Vote.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />

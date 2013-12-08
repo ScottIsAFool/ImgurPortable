@@ -35,7 +35,7 @@ namespace ImgurPortablePlayground
         private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
         {
             //var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
-            await App.ImgurClient.AddImagesToAlbumAsync(TODO, "yioyz");
+            await App.ImgurClient.VoteOnCommentAsync("143734614", Vote.Up);
         }
     }
 }

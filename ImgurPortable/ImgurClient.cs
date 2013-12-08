@@ -989,6 +989,126 @@ namespace ImgurPortable
 
         #endregion
 
+        #region Comments
+        public async Task<Comment> GetCommentAsync(string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetCommentEndPoint(commentId);
+
+            return await GetResponse<Comment>(endPoint, String.Empty, cancellationToken);
+        }
+
+        public async Task<Comment> CreateCommentAsync(string imageId, string comment, string parentId = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(comment))
+            {
+                throw new ArgumentNullException("comment", "Comment cannot be null or empty");
+            }
+
+            var postData = new Dictionary<string, string>
+            {
+                {"image_id", imageId},
+                {"comment", comment}
+            };
+
+            if (!string.IsNullOrEmpty(parentId))
+            {
+                postData.Add("parent_id", parentId);
+            }
+
+            var endPoint = GetCommentEndPoint(string.Empty);
+
+            var response = await PostResponse<Comment>(endPoint, string.Empty, postData, cancellationToken);
+
+            return await GetCommentAsync(response.Id, cancellationToken);
+        }
+
+        public async Task<bool> DeleteCommentAsync(string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetCommentEndPoint(commentId);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, cancellationToken);
+        }
+
+        public async Task<CommentCollection> GetCommentRepliesAsync(string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetCommentEndPoint(commentId);
+
+            return await GetResponse<CommentCollection>(endPoint, "replies", cancellationToken);
+        }
+
+        public async Task<bool> VoteOnCommentAsync(string commentId, Vote vote, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetCommentEndPoint(commentId);
+            var method = string.Format("vote/{0}", vote.ToLower());
+
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), cancellationToken);
+        }
+
+        public async Task<bool> ReportCommentAsync(string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetCommentEndPoint(commentId);
+
+            return await PostResponse<bool>(endPoint, "report", new Dictionary<string, string>(), cancellationToken);
+        }
+
+        public async Task<bool> AddReplyToCommentAsync(string commentId, string imageId, string comment, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(comment))
+            {
+                throw new ArgumentNullException("comment", "Comment cannot be null or empty");
+            }
+
+            var endPoint = GetCommentEndPoint(commentId);
+            var postData = new Dictionary<string, string>
+            {
+                { "image_id", imageId },
+                { "comment", comment }
+            };
+
+            return await PostResponse<bool>(endPoint, string.Empty, postData, cancellationToken);
+        }
+        #endregion
+
         private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
@@ -1007,9 +1127,9 @@ namespace ImgurPortable
                 throw new ImgurException(error);
             }
 
-            var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
+            var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
 
-            return item;
+            return item.Response;
         }
 
         private async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, CancellationToken cancellationToken = default(CancellationToken))
@@ -1031,8 +1151,8 @@ namespace ImgurPortable
                 throw new ImgurException(error);
             }
 
-            var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
-            return item;
+            var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
+            return item.Response;
         }
 
         private async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, CancellationToken cancellationToken = default(CancellationToken))
@@ -1054,8 +1174,8 @@ namespace ImgurPortable
                 throw new ImgurException(error);
             }
 
-            var item = JsonConvert.DeserializeObject<TResponseType>(responseString);
-            return item;
+            var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
+            return item.Response;
         }
 
         private static string GetAccountEndPoint(string username)
@@ -1066,6 +1186,11 @@ namespace ImgurPortable
         private static string GetAlbumEndPoint(string albumId)
         {
             return string.Format("3/album/{0}", albumId);
+        }
+
+        private static string GetCommentEndPoint(string commentId)
+        {
+            return string.Format("3/comment/{0}", commentId);
         }
 
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
