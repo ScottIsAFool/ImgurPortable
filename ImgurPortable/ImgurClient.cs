@@ -1406,6 +1406,7 @@ namespace ImgurPortable
 
         #endregion
 
+        #region Notification
         public async Task<NotificationCollection> GetNotificationsAsync(bool onlyUnread = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             var endPoint = GetNotificationEndPoint(string.Empty);
@@ -1437,6 +1438,7 @@ namespace ImgurPortable
 
             return await PostResponse<bool>(endPoint, string.Empty, new Dictionary<string, string>(), HttpClient, cancellationToken);
         }
+        #endregion
 
         #region Internal Common Methods
         private async Task<Album> CreateUpdateAlbumInternal(string albumId, IEnumerable<string> imageIds, string title, string description, AlbumPrivacy? privacy, Layout? layout, string coverImageId, HttpClient httpClient, CancellationToken cancellationToken)
@@ -1570,6 +1572,7 @@ namespace ImgurPortable
 
         #endregion
 
+        #region EndPoint Methods
         private static string GetAccountEndPoint(string username)
         {
             return string.Format("3/account/{0}", username);
@@ -1602,8 +1605,9 @@ namespace ImgurPortable
 
         private static string GetNotificationEndPoint(string notificationId)
         {
-            return string.Format("3/notification/{0}", notificationId)
+            return string.Format("3/notification/{0}", notificationId);
         }
+        #endregion
 
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
         {
