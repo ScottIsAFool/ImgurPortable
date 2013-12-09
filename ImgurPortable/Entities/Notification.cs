@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using PropertyChanged;
 
 namespace ImgurPortable.Entities
@@ -10,6 +11,8 @@ namespace ImgurPortable.Entities
         public ReplyCollection Replies { get; set; }
 
         [JsonProperty("messages")]
-        public MessageCollection Messages { get; set; }
+        public ConversationCollection Conversations { get; set; }
     }
+
+    public class NotificationCollection : List<Notification>{}
 }

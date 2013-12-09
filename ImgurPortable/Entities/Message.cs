@@ -10,22 +10,6 @@ namespace ImgurPortable.Entities
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [JsonProperty("account_id")]
-        public int AccountId { get; set; }
-
-        [JsonProperty("viewed")]
-        public bool Viewed { get; set; }
-
-        [JsonProperty("content")]
-        public MessageContent Content { get; set; }
-    }
-
-    [ImplementPropertyChanged]
-    public class MessageContent
-    {
-        [JsonProperty("id")]
-        public int Id { get; set; }
-
         [JsonProperty("from")]
         public string From { get; set; }
 
@@ -47,6 +31,7 @@ namespace ImgurPortable.Entities
         [JsonProperty("parent_id")]
         public int ParentId { get; set; }
     }
+
 
     public class MessageCollection : List<Message>{}
 }

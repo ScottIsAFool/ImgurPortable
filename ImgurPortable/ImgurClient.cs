@@ -1160,6 +1160,7 @@ namespace ImgurPortable
         }
         #endregion
 
+        #region Images
         public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var type = ImageUploadType.File;
@@ -1322,6 +1323,121 @@ namespace ImgurPortable
             return GetImageUrlInternal(imageId, string.Empty);
         }
 
+        #endregion
+
+        #region Conversations
+        public async Task<ConversationCollection> GetConversationsAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var endPoint = GetConversationEndPoint(string.Empty);
+
+            return await GetResponse<ConversationCollection>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<Conversation> GetConversationAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(conversationId))
+            {
+                throw new ArgumentNullException("conversationId", "Conversation ID cannot be null or empty");
+            }
+
+            var endPoint = GetConversationEndPoint(conversationId);
+
+            return await GetResponse<Conversation>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> SendMessageAsync(string recipientUsername, string message, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(recipientUsername))
+            {
+                throw new ArgumentNullException("recipientUsername", "Recipient must not be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new ArgumentNullException("message", "Empty messages are not permitted");
+            }
+
+            var endPoint = GetConversationEndPoint(recipientUsername);
+            var postData = new Dictionary<string, string>
+            {
+                {"body", message}
+            };
+
+            return await PostResponse<bool>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> DeleteMessageAsync(string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(conversationId))
+            {
+                throw new ArgumentNullException("conversationId", "Conversation ID cannot be null or empty");
+            }
+
+            var endPoint = GetConversationEndPoint(conversationId);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> ReportSenderAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var endPoint = GetConversationEndPoint(string.Empty);
+            var method = string.Format("report/{0}", username);
+
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> BlockSenderAsync(string username, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentNullException("username", "Username cannot be null or empty");
+            }
+
+            var endPoint = GetConversationEndPoint(string.Empty);
+            var method = string.Format("block/{0}", username);
+
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
+        #endregion
+
+        public async Task<NotificationCollection> GetNotificationsAsync(bool onlyUnread = true, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var endPoint = GetNotificationEndPoint(string.Empty);
+            var method = string.Format("?new={0}", onlyUnread.ToLower());
+
+            return await GetResponse<NotificationCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<Notification> GetNotificationAsync(string notificationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(notificationId))
+            {
+                throw new ArgumentNullException("notificationId", "Notification ID cannot be null or empty");
+            }
+
+            var endPoint = GetNotificationEndPoint(notificationId);
+
+            return await GetResponse<Notification>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> MarkNotificationAsReadAsync(string notificationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(notificationId))
+            {
+                throw new ArgumentNullException("notificationId", "Notification ID cannot be null or empty");
+            }
+
+            var endPoint = GetNotificationEndPoint(notificationId);
+
+            return await PostResponse<bool>(endPoint, string.Empty, new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
         #region Internal Common Methods
         private async Task<Album> CreateUpdateAlbumInternal(string albumId, IEnumerable<string> imageIds, string title, string description, AlbumPrivacy? privacy, Layout? layout, string coverImageId, HttpClient httpClient, CancellationToken cancellationToken)
         {
@@ -1477,6 +1593,16 @@ namespace ImgurPortable
         private static string GetImageEndPoint(string imageId)
         {
             return string.Format("3/image/{0}", imageId);
+        }
+
+        private static string GetConversationEndPoint(string conversationId)
+        {
+            return string.Format("3/conversations/{0}", conversationId);
+        }
+
+        private static string GetNotificationEndPoint(string notificationId)
+        {
+            return string.Format("3/notification/{0}", notificationId)
         }
 
         private static HttpClient CreateHttpClient(string clientId, HttpMessageHandler handler)
