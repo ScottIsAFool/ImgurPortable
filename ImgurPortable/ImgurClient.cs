@@ -1160,6 +1160,109 @@ namespace ImgurPortable
         }
         #endregion
 
+        public async Task<Image> GetMemeImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("g");
+            var method = string.Format("memes/{0}", imageId);
+
+            return await GetResponse<Image>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<Image> GetSubRedditImageAsync(string subReddit, string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(subReddit))
+            {
+                throw new ArgumentNullException("subReddit", "Sub-reddit cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("r");
+            var method = string.Format("{0}/{1}", subReddit, imageId);
+
+            return await GetResponse<Image>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> RemoveImageFromGalleryAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint(imageId);
+
+            return await DeleteResponse<bool>(endPoint, string.Empty, HttpClient, cancellationToken);
+        }
+
+        public async Task<Album> GetGalleryAlbumAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album");
+
+            return await GetResponse<Album>(endPoint, albumId, HttpClient, cancellationToken);
+        }
+
+        public async Task<Image> GetGalleryImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("image");
+
+            return await GetResponse<Image>(endPoint, imageId, HttpClient, cancellationToken);
+        }
+
+        public async Task<VoteCounts> GetGalleryVotesAsync(string galleryId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(galleryId))
+            {
+                throw new ArgumentNullException("galleryId", "Gallery ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint(galleryId);
+
+            return await GetResponse<VoteCounts>(endPoint, "votes", HttpClient, cancellationToken);
+        }
+
+        public async Task<VoteCounts> GetGalleryAlbumVotesAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album/" + albumId);
+
+            return await GetResponse<VoteCounts>(endPoint, "votes", HttpClient, cancellationToken);
+        }
+
+        public async Task<VoteCounts> GetGalleryImageVotesAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("image/" + imageId);
+
+            return await GetResponse<VoteCounts>(endPoint, "votes", HttpClient, cancellationToken);
+        }
+
         #region Images
         public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {

@@ -90,6 +90,7 @@
     <Compile Include="Entities\TopGalleryComment.cs" />
     <Compile Include="Entities\Trophy.cs" />
     <Compile Include="Entities\Vote.cs" />
+    <Compile Include="Entities\VoteCounts.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
