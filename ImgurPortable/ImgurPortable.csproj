@@ -75,6 +75,7 @@
     <Compile Include="Entities\Error.cs" />
     <Compile Include="Entities\GalleryProfile.cs" />
     <Compile Include="Entities\GallerySection.cs" />
+    <Compile Include="Entities\GallerySort.cs" />
     <Compile Include="Entities\Image.cs" />
     <Compile Include="Entities\ImageUploadType.cs" />
     <Compile Include="Entities\ImgurClass.cs" />

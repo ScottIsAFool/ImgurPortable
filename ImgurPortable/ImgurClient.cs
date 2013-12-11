@@ -1263,6 +1263,120 @@ namespace ImgurPortable
             return await GetResponse<VoteCounts>(endPoint, "votes", HttpClient, cancellationToken);
         }
 
+        public async Task<bool> ReportGalleryAsync(string galleryId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(galleryId))
+            {
+                throw new ArgumentNullException("galleryId", "Gallery ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint(galleryId);
+
+            return await PostResponse<bool>(endPoint, "report", new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> ReportGalleryAlbumAsync(string albumId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album/" + albumId);
+
+            return await PostResponse<bool>(endPoint, "report", new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> ReportGalleryImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("image/" + imageId);
+
+            return await PostResponse<bool>(endPoint, "report", new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
+        public async Task<bool> GalleryVoteAsync(string galleryId, Vote vote, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(galleryId))
+            {
+                throw new ArgumentNullException("galleryId", "Gallery ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint(galleryId);
+            var method = string.Format("vote/{0}", vote.ToLower());
+
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken)
+        }
+
+        public async Task<bool> GalleryAlbumVoteAsync(string albumId, Vote vote, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album/" + albumId);
+            var method = string.Format("vote/{0}", vote.ToLower());
+
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken)
+        }
+
+        public async Task<bool> GalleryImageVoteAsync(string imageId, Vote vote, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("image/" + imageId);
+            var method = string.Format("vote/{0}", vote.ToLower());
+
+            return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken);
+        }
+
+        public async Task<CommentCollection> GetGalleryComments(string galleryId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(galleryId))
+            {
+                throw new ArgumentNullException("galleryId", "Gallery ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint(galleryId);
+            var method = string.Format("comments/{0}", sort.ToLower());
+
+            return await GetResponse<CommentCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<CommentCollection> GetGalleryAlbumComments(string albumId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album/" + albumId);
+            var method = string.Format("comments/{0}", sort.ToLower());
+
+            return await GetResponse<CommentCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<CommentCollection> GetGalleryImageComments(string imageId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album/" + imageId);
+            var method = string.Format("comments/{0}", sort.ToLower());
+
+            return await GetResponse<CommentCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
         #region Images
         public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
