@@ -1338,7 +1338,7 @@ namespace ImgurPortable
             return await PostResponse<bool>(endPoint, method, new Dictionary<string, string>(), HttpClient, cancellationToken);
         }
 
-        public async Task<CommentCollection> GetGalleryComments(string galleryId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CommentCollection> GetGalleryCommentsAsync(string galleryId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(galleryId))
             {
@@ -1351,7 +1351,7 @@ namespace ImgurPortable
             return await GetResponse<CommentCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
-        public async Task<CommentCollection> GetGalleryAlbumComments(string albumId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CommentCollection> GetGalleryAlbumCommentsAsync(string albumId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(albumId))
             {
@@ -1364,7 +1364,7 @@ namespace ImgurPortable
             return await GetResponse<CommentCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
-        public async Task<CommentCollection> GetGalleryImageComments(string imageId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CommentCollection> GetGalleryImageCommentsAsync(string imageId, GallerySort sort = GallerySort.Best, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(imageId))
             {
@@ -1375,6 +1375,60 @@ namespace ImgurPortable
             var method = string.Format("comments/{0}", sort.ToLower());
 
             return await GetResponse<CommentCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<Comment> GetGalleryCommentAsync(string galleryId, string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(galleryId))
+            {
+                throw new ArgumentNullException("galleryId", "Gallery ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint(galleryId);
+            var method = string.Format("comment/{0}", commentId);
+
+            return await GetResponse<Comment>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<Comment> GetGalleryAlbumCommentAsync(string albumId, string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(albumId))
+            {
+                throw new ArgumentNullException("albumId", "Album ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("album/" + albumId);
+            var method = string.Format("comment/{0}", commentId);
+
+            return await GetResponse<Comment>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<Comment> GetGalleryImageCommentAsync(string imageId, string commentId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(imageId))
+            {
+                throw new ArgumentNullException("imageId", "Image ID cannot be null or empty");
+            }
+
+            if (string.IsNullOrEmpty(commentId))
+            {
+                throw new ArgumentNullException("commentId", "Comment ID cannot be null or empty");
+            }
+
+            var endPoint = GetGalleryEndPoint("image/" + imageId);
+            var method = string.Format("comment/{0}", commentId);
+
+            return await GetResponse<Comment>(endPoint, method, HttpClient, cancellationToken);
         }
 
         #region Images
