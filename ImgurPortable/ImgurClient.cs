@@ -1160,6 +1160,8 @@ namespace ImgurPortable
         }
         #endregion
 
+        #region Gallery
+
         public async Task<Image> GetMemeImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(imageId))
@@ -1661,15 +1663,16 @@ namespace ImgurPortable
 
             return await GetResponse<int>(endPoint, "comments/count", HttpClient, cancellationToken);
         }
+#endregion
 
         #region Images
         public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var type = ImageUploadType.File;
-            return null;
+            return await UploadImageAsync(image.ToArray(), albumId, name, title, description, cancellationToken);
         }
 
-        public async Task<Image> UploadImageAsync(string image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<Image> UploadImageAsync(byte[] image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var type = ImageUploadType.Base64;
             return null;
@@ -1678,6 +1681,34 @@ namespace ImgurPortable
         public async Task<Image> UploadImageAsync(Uri imageUrl, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var type = ImageUploadType.Url;
+
+            var postData = new Dictionary<string, string>
+            {
+                {"type", type.ToLower()}
+            };
+
+            if (!string.IsNullOrEmpty(albumId))
+            {
+                postData.Add("album", albumId);
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                postData.Add("name", name);
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+
+
             return null;
         }
 
