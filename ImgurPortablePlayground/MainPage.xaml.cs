@@ -38,7 +38,7 @@ namespace ImgurPortablePlayground
             var images = await App.ImgurClient.GetGalleryAsync(GallerySection.Hot, Sort.Time, dateRange: DateRange.Day);
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -46,10 +46,25 @@ namespace ImgurPortablePlayground
             if (settings.Contains("AccessToken"))
             {
                 var token = (AccessToken)settings["AccessToken"];
-                if (App.ImgurClient != null && string.IsNullOrEmpty(App.ImgurClient.AccessToken))
+                if (DateTime.Now < token.ExpiryDateTime)
                 {
-                    App.ImgurClient.AddAccessToken(token.Token);
-                    //LoginButton.IsEnabled = false;
+                    if (App.ImgurClient != null && string.IsNullOrEmpty(App.ImgurClient.AccessToken))
+                    {
+                        App.ImgurClient.AddAccessToken(token.Token);
+                        //LoginButton.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        var refreshToken = await App.ImgurClient.GetRefreshTokenAsync(token.RefreshToken);
+                        settings["AccessToken"] = refreshToken;
+                        settings.Save();
+
+                        App.ImgurClient.AddAccessToken(refreshToken.Token);
+                    }
+                    catch{}
                 }
             }
         }

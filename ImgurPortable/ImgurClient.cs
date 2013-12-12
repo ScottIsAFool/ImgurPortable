@@ -115,6 +115,7 @@ namespace ImgurPortable
             };
 
             var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, HttpClient, cancellationToken);
+            response.ExpiryDateTime = DateTime.Now.AddHours(1);
 
             return response;
         }
@@ -144,6 +145,7 @@ namespace ImgurPortable
             };
 
             var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, HttpClient, cancellationToken);
+            response.ExpiryDateTime = DateTime.Now.AddHours(1);
 
             return response;
         }
@@ -156,7 +158,7 @@ namespace ImgurPortable
         /// <returns>
         /// The access token object
         /// </returns>
-        public async Task<AccessToken> RefreshTokenasync(string refreshToken, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<AccessToken> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default(CancellationToken))
         {
             var postData = new Dictionary<string, string>
             {
@@ -167,6 +169,7 @@ namespace ImgurPortable
             };
 
             var response = await PostResponse<AccessToken>(ImgurAuthorisationTokenEndPoint, string.Empty, postData, HttpClient, cancellationToken);
+            response.ExpiryDateTime = DateTime.Now.AddHours(1);
 
             return response;
         }

@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
+using PropertyChanged;
 
 namespace ImgurPortable.Entities
 {
+    [ImplementPropertyChanged]
     public class AccessToken
     {
         [JsonProperty("access_token")]
@@ -18,5 +21,7 @@ namespace ImgurPortable.Entities
 
         [JsonProperty("account_username")]
         public string AccountUsername { get; set; }
+
+        public DateTime ExpiryDateTime { get; set; }
     }
 }

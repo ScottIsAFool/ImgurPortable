@@ -37,7 +37,8 @@ namespace ImgurPortable.Extensions
                 ExpiresIn = int.Parse(dict["expires_in"]),
                 RefreshToken = dict["refresh_token"],
                 Token = dict["access_token"],
-                TokenType = dict["token_type"]
+                TokenType = dict["token_type"],
+                ExpiryDateTime = DateTime.Now.AddHours(1)
             };
 
             return token;
