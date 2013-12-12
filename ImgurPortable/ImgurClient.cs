@@ -18,6 +18,7 @@ namespace ImgurPortable
         private const string ImgurApiUrlBase = "https://api.imgur.com/";
         private const string ImgurAuthorisationEndPoint = ImgurApiUrlBase + "oauth2/authorize";
         private const string ImgurAuthorisationTokenEndPoint = "oauth2/token";
+        private const string ImgurImageUploadEndPoint = "3/image";
 
         internal readonly HttpClient HttpClient;
         internal readonly HttpClient AnonHttpClient;
@@ -1712,9 +1713,9 @@ namespace ImgurPortable
             var base64 = Convert.ToBase64String(image);
             postData.Add("image", base64);
 
-            var endPoint = "3/image";
+            var response = await PostResponse<Image>(ImgurImageUploadEndPoint, string.Empty, postData, HttpClient, cancellationToken);
 
-            return await PostResponse<Image>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
+            return await GetImageAsync(response.Id, cancellationToken);
         }
 
         public async Task<Image> UploadImageAsync(Uri imageUrl, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1747,9 +1748,9 @@ namespace ImgurPortable
                 postData.Add("description", description);
             }
 
-            var endPoint = "3/image";
+            var response = await PostResponse<Image>(ImgurImageUploadEndPoint, string.Empty, postData, HttpClient, cancellationToken);
 
-            return await PostResponse<Image>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
+            return await GetImageAsync(response.Id, cancellationToken);
         }
 
         public async Task<Image> GetImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
