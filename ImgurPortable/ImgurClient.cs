@@ -1189,7 +1189,11 @@ namespace ImgurPortable
             return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
-        public async Task<ImageCollection> GetMemesSubgalleryAsync(Sort sort = Sort.Viral, int? pageNumber = null, DateRange? range = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ImageCollection> GetMemesSubgalleryAsync(
+            Sort sort = Sort.Viral, 
+            int? pageNumber = null, 
+            DateRange? range = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var endPoint = GetGalleryEndPoint("g/memes");
             var method = sort.ToLower();
@@ -1198,6 +1202,34 @@ namespace ImgurPortable
             {
                 method += string.Format("/{0}", range.Value.ToLower());
             }
+
+            if (pageNumber.HasValue)
+            {
+                method += string.Format("/{0}", pageNumber.Value);
+            }
+
+            return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
+        public async Task<ImageCollection> GetSubredditGalleriesAsync(
+            string subreddit,
+            Sort sort = Sort.Top,
+            int? pageNumber = null,
+            DateRange dateRange = DateRange.Week,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(subreddit))
+            {
+                throw new ArgumentNullException("subreddit", "Sub-reddit cannot be null or empty");
+            }
+
+            if (sort == Sort.Viral)
+            {
+                throw new InvalidOperationException("Viral is not a supported sort type for this method");
+            }
+
+            var endPoint = GetGalleryEndPoint("r/" + subreddit);
+            var method = string.Format("{0}/{1}", sort.ToLower(), dateRange.ToLower());
 
             if (pageNumber.HasValue)
             {
@@ -2124,10 +2156,7 @@ namespace ImgurPortable
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
             var response = await httpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new NotImplementedException();
-            }
+            response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
 
@@ -2137,8 +2166,7 @@ namespace ImgurPortable
                 throw new ImgurException(error);
             }
 
-            var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
-
+            var item = await responseString.DeserialiseAsync<ImgurResponse<TResponseType>>();
             return item.Response;
         }
 
@@ -2148,10 +2176,7 @@ namespace ImgurPortable
 
             var response = await httpClient.GetAsync(url, cancellationToken);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new NotImplementedException();
-            }
+            response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
 
@@ -2161,7 +2186,7 @@ namespace ImgurPortable
                 throw new ImgurException(error);
             }
 
-            var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
+            var item = await responseString.DeserialiseAsync<ImgurResponse<TResponseType>>();
             return item.Response;
         }
 
@@ -2171,10 +2196,7 @@ namespace ImgurPortable
 
             var response = await httpClient.DeleteAsync(url, cancellationToken);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new NotImplementedException();
-            }
+            response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
 
@@ -2184,7 +2206,7 @@ namespace ImgurPortable
                 throw new ImgurException(error);
             }
 
-            var item = JsonConvert.DeserializeObject<ImgurResponse<TResponseType>>(responseString);
+            var item = await responseString.DeserialiseAsync<ImgurResponse<TResponseType>>();
             return item.Response;
         }
 

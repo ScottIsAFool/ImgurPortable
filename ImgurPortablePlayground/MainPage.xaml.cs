@@ -35,7 +35,7 @@ namespace ImgurPortablePlayground
         private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
         {
             //var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
-            var images = await App.ImgurClient.GetGalleryAsync();
+            var images = await App.ImgurClient.GetSubredditGalleriesAsync("gonewild");
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
