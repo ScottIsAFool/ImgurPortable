@@ -1668,23 +1668,25 @@ namespace ImgurPortable
         #region Images
         public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var type = ImageUploadType.File;
+            if (image == null || image.Length == 0)
+            {
+                throw new ArgumentNullException("image", "Image stream cannot be null or empty");
+            }
+
             return await UploadImageAsync(image.ToArray(), albumId, name, title, description, cancellationToken);
         }
 
         public async Task<Image> UploadImageAsync(byte[] image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (image == null || image.Length == 0)
+            {
+                throw new ArgumentNullException("image", "Image array cannot be null or empty");
+            }
+
             var type = ImageUploadType.Base64;
-            return null;
-        }
-
-        public async Task<Image> UploadImageAsync(Uri imageUrl, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var type = ImageUploadType.Url;
-
             var postData = new Dictionary<string, string>
             {
-                {"type", type.ToLower()}
+                {"type", type.ToLower()},
             };
 
             if (!string.IsNullOrEmpty(albumId))
@@ -1707,9 +1709,47 @@ namespace ImgurPortable
                 postData.Add("description", description);
             }
 
+            var base64 = Convert.ToBase64String(image);
+            postData.Add("image", base64);
 
+            var endPoint = "3/image";
 
-            return null;
+            return await PostResponse<Image>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
+        }
+
+        public async Task<Image> UploadImageAsync(Uri imageUrl, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var type = ImageUploadType.Url;
+
+            var postData = new Dictionary<string, string>
+            {
+                {"type", type.ToLower()},
+                {"image", imageUrl.ToString()}
+            };
+
+            if (!string.IsNullOrEmpty(albumId))
+            {
+                postData.Add("album", albumId);
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                postData.Add("name", name);
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                postData.Add("title", title);
+            }
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                postData.Add("description", description);
+            }
+
+            var endPoint = "3/image";
+
+            return await PostResponse<Image>(endPoint, string.Empty, postData, HttpClient, cancellationToken);
         }
 
         public async Task<Image> GetImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
