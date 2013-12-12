@@ -1239,6 +1239,30 @@ namespace ImgurPortable
             return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
+        public async Task<ImageCollection> SearchGalleriesAsync(
+            string searchTerm,
+            Sort sort = Sort.Time,
+            int? pageNumber = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (sort == Sort.Top)
+            {
+                throw new InvalidOperationException("Top sort is not valid for this method");
+            }
+
+            var endPoint = GetGalleryEndPoint(string.Empty);
+            var method = string.Format("search/{0}", sort.ToLower());
+
+            if (pageNumber.HasValue)
+            {
+                method += string.Format("/{0}", pageNumber.Value);
+            }
+
+            method += string.Format("?q={0}", searchTerm);
+
+            return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
         public async Task<Image> GetMemeImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(imageId))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ImgurPortable.Converters;
 using Newtonsoft.Json;
 using PropertyChanged;
@@ -7,6 +8,7 @@ using PropertyChanged;
 namespace ImgurPortable.Entities
 {
     [ImplementPropertyChanged]
+    [DebuggerDisplay("Id: {Id}, Title: {Title}")]
     public class Image : ImgurClass
     {
         [JsonProperty("id")]
