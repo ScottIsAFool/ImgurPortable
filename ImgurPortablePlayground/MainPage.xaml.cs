@@ -19,8 +19,6 @@ namespace ImgurPortablePlayground
             
         }
 
-        //0a453bcc555c72a
-        //990617fc34de37b8e4641e0b12bc9df8867dfad8
         private void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
             var url = App.ImgurClient.GetAuthenticationUrl(AuthResponseType.Token);
@@ -37,7 +35,7 @@ namespace ImgurPortablePlayground
         private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
         {
             //var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
-            var images = await App.ImgurClient.GetMemesSubgalleryAsync(Sort.Top, range: DateRange.Day);
+            var images = await App.ImgurClient.GetGalleryAsync();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -51,7 +49,7 @@ namespace ImgurPortablePlayground
                 if (App.ImgurClient != null && string.IsNullOrEmpty(App.ImgurClient.AccessToken))
                 {
                     App.ImgurClient.AddAccessToken(token.Token);
-                    LoginButton.IsEnabled = false;
+                    //LoginButton.IsEnabled = false;
                 }
             }
         }

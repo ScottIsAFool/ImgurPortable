@@ -1163,6 +1163,32 @@ namespace ImgurPortable
 
         #region Gallery
 
+        public async Task<ImageCollection> GetGalleryAsync(
+            GallerySection section = GallerySection.Hot,
+            Sort sort = Sort.Viral,
+            int? pageNumber = null,
+            DateRange dateRange = DateRange.Day,
+            bool showViral = true,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (sort == Sort.Top)
+            {
+                throw new InvalidOperationException("Top is not a supported value for this method");
+            }
+
+            var endPoint = GetGalleryEndPoint(section.ToLower());
+            var method = string.Format("{0}/{1}", sort.ToLower(), dateRange.ToLower());
+
+            if (pageNumber.HasValue)
+            {
+                method += string.Format("/{0}", pageNumber.Value);
+            }
+
+            method += string.Format("?showViral={0}", showViral.ToLower());
+
+            return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
         public async Task<ImageCollection> GetMemesSubgalleryAsync(Sort sort = Sort.Viral, int? pageNumber = null, DateRange? range = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var endPoint = GetGalleryEndPoint("g/memes");
