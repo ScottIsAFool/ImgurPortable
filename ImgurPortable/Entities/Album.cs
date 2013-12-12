@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using ImgurPortable.Converters;
 using Newtonsoft.Json;
 using PropertyChanged;
 
 namespace ImgurPortable.Entities
 {
     [ImplementPropertyChanged]
-    public class Album
+    public class Album : ImgurClass
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -18,6 +19,7 @@ namespace ImgurPortable.Entities
         public string Description { get; set; }
 
         [JsonProperty("datetime")]
+        [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTime Datetime { get; set; }
 
         [JsonProperty("cover")]

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using System.Windows;
+using System.Windows.Navigation;
 using ImgurPortable.Entities;
 using ImgurPortable.Extensions;
 using Microsoft.Phone.Controls;
@@ -35,7 +37,23 @@ namespace ImgurPortablePlayground
         private async void ImageButton_OnClick(object sender, RoutedEventArgs e)
         {
             //var images = await App.ImgurClient.GetUserImagesAsync(App.AccessToken.AccountUsername);
-            await App.ImgurClient.GetCommentAsync("143734614");
+            var images = await App.ImgurClient.GetMemesSubgalleryAsync(Sort.Top, range: DateRange.Day);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if (settings.Contains("AccessToken"))
+            {
+                var token = (AccessToken)settings["AccessToken"];
+                if (App.ImgurClient != null && string.IsNullOrEmpty(App.ImgurClient.AccessToken))
+                {
+                    App.ImgurClient.AddAccessToken(token.Token);
+                    LoginButton.IsEnabled = false;
+                }
+            }
         }
     }
 }

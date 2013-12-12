@@ -1163,6 +1163,24 @@ namespace ImgurPortable
 
         #region Gallery
 
+        public async Task<ImageCollection> GetMemesSubgalleryAsync(Sort sort = Sort.Viral, int? pageNumber = null, DateRange? range = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var endPoint = GetGalleryEndPoint("g/memes");
+            var method = sort.ToLower();
+
+            if (sort == Sort.Top && range.HasValue)
+            {
+                method += string.Format("/{0}", range.Value.ToLower());
+            }
+
+            if (pageNumber.HasValue)
+            {
+                method += string.Format("/{0}", pageNumber.Value);
+            }
+
+            return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
         public async Task<Image> GetMemeImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(imageId))

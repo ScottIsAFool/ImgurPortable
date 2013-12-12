@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ImgurPortable.Converters;
 using Newtonsoft.Json;
 using PropertyChanged;
 
@@ -18,6 +19,7 @@ namespace ImgurPortable.Entities
         public string Description { get; set; }
 
         [JsonProperty("datetime")]
+        [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTime Datetime { get; set; }
 
         [JsonProperty("type")]
@@ -39,13 +41,13 @@ namespace ImgurPortable.Entities
         public int Views { get; set; }
 
         [JsonProperty("bandwidth")]
-        public int Bandwidth { get; set; }
+        public long Bandwidth { get; set; }
 
         [JsonProperty("favorite")]
         public bool Favorite { get; set; }
 
         [JsonProperty("nsfw")]
-        public object Nsfw { get; set; }
+        public bool? Nsfw { get; set; }
 
         [JsonProperty("section")]
         public string Section { get; set; }

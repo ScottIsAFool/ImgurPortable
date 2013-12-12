@@ -62,6 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\UnixDateTimeConverter.cs" />
     <Compile Include="Entities\AccessToken.cs" />
     <Compile Include="Entities\Account.cs" />
     <Compile Include="Entities\AccountSettings.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Entities\Trophy.cs" />
     <Compile Include="Entities\Vote.cs" />
     <Compile Include="Entities\VoteCounts.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />

@@ -3,6 +3,7 @@
     public enum Sort
     {
         Viral,
-        Time
+        Time,
+        Top
     }
 }
