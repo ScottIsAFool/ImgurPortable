@@ -1263,6 +1263,19 @@ namespace ImgurPortable
             return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
         }
 
+        public async Task<ImageCollection> GetRandomGalleryImages(int? pageNumber = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var endPoint = GetGalleryEndPoint("random");
+            var method = "random";
+
+            if (pageNumber.HasValue)
+            {
+                method += "/" + pageNumber.Value;
+            }
+
+            return await GetResponse<ImageCollection>(endPoint, method, HttpClient, cancellationToken);
+        }
+
         public async Task<Image> GetMemeImageAsync(string imageId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(imageId))
