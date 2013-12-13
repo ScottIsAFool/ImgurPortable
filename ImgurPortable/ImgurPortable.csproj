@@ -94,6 +94,7 @@
     <Compile Include="Entities\Vote.cs" />
     <Compile Include="Entities\VoteCounts.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ImgurClientExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ImgurPortable.Entities;
@@ -2194,7 +2195,13 @@ namespace ImgurPortable
         private static async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
-            var response = await httpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
+
+            var formDataBoundary = string.Format("----------{0:N}", Guid.NewGuid());
+            var content = "multipart/form-data; boundary=" + formDataBoundary;
+
+            var formData = GetMultipartFormData(postData, formDataBoundary);
+
+            var response = await httpClient.PostAsync(url, new ByteArrayContent(formData), cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
@@ -2296,6 +2303,44 @@ namespace ImgurPortable
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
 
             return httpClient;
+        }
+
+        private static byte[] GetMultipartFormData(Dictionary<string, string> postParameters, string boundary)
+        {
+            byte[] formData = null;
+            using (Stream formDataStream = new System.IO.MemoryStream())
+            {
+                var encoding = Encoding.UTF8;
+                bool needsCLRF = false;
+
+                foreach (var param in postParameters)
+                {
+                    // Thanks to feedback from commenters, add a CRLF to allow multiple parameters to be added.
+                    // Skip it on the first parameter, add it to subsequent parameters.
+                    if (needsCLRF)
+                        formDataStream.Write(encoding.GetBytes("\r\n"), 0, encoding.GetByteCount("\r\n"));
+
+                    needsCLRF = true;
+
+                    string postData = string.Format("--{0}\r\nContent-Disposition: form-data; name=\"{1}\"\r\n\r\n{2}",
+                        boundary,
+                        param.Key,
+                        param.Value);
+                    formDataStream.Write(encoding.GetBytes(postData), 0, encoding.GetByteCount(postData));
+
+                }
+
+                // Add the end of the request.  Start with a newline
+                string footer = "\r\n--" + boundary + "--\r\n";
+                formDataStream.Write(encoding.GetBytes(footer), 0, encoding.GetByteCount(footer));
+
+                // Dump the Stream into a byte[]
+                formDataStream.Position = 0;
+                formData = new byte[formDataStream.Length];
+                formDataStream.Read(formData, 0, formData.Length);
+            }
+
+            return formData;
         }
     }
 }
