@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace ImgurPortable
         internal readonly HttpClient AnonHttpClient;
         internal readonly ILogger Logger;
 
+        #region Constructors
         public ImgurClient(string clientId, string clientSecret)
             : this(clientId, clientSecret, new NullLogger())
         { }
@@ -53,8 +55,9 @@ namespace ImgurPortable
             AnonHttpClient = CreateHttpClient(clientId, handler);
             Logger = logger ?? new NullLogger();
         }
+        #endregion
 
-
+        #region Public Properties
         /// <summary>
         /// Gets the client identifier.
         /// </summary>
@@ -78,6 +81,7 @@ namespace ImgurPortable
         /// The access token.
         /// </value>
         public string AccessToken { get; internal set; }
+        #endregion
 
         #region Authorisation
         /// <summary>
@@ -2199,8 +2203,9 @@ namespace ImgurPortable
         #endregion
 
         #region Web calls
-        private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken), [CallerMemberName] string callingMethod = "")
         {
+            Logger.Debug(callingMethod);
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
             var formDataBoundary = string.Format("----------{0:N}", Guid.NewGuid());
@@ -2209,8 +2214,13 @@ namespace ImgurPortable
             var formData = GetMultipartFormData(postData, formDataBoundary);
 
             Logger.Debug("POST: {0}", url);
+            var requestTime = DateTime.Now;
 
             var response = await httpClient.PostAsync(url, new ByteArrayContent(formData), cancellationToken);
+            var duration = DateTime.Now - requestTime;
+
+            Logger.Debug("Received {0} status code after {1} ms from {2}: {3}", response.StatusCode, duration.TotalMilliseconds, "POST", url);
+
 
             response.EnsureSuccessStatusCode();
 
@@ -2226,13 +2236,18 @@ namespace ImgurPortable
             return item.Response;
         }
 
-        private async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken), [CallerMemberName] string callingMethod = "")
         {
+            Logger.Debug(callingMethod);
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
             Logger.Debug("GET: {0}", url);
+            var requestTime = DateTime.Now;
 
             var response = await httpClient.GetAsync(url, cancellationToken);
+            var duration = DateTime.Now - requestTime;
+
+            Logger.Debug("Received {0} status code after {1} ms from {2}: {3}", response.StatusCode, duration.TotalMilliseconds, "GET", url);
 
             response.EnsureSuccessStatusCode();
 
@@ -2248,13 +2263,18 @@ namespace ImgurPortable
             return item.Response;
         }
 
-        private async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken), [CallerMemberName] string callingMethod = "")
         {
+            Logger.Debug(callingMethod);
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
             Logger.Debug("DELETE: {0}", url);
+            var requestTime = DateTime.Now;
 
             var response = await httpClient.DeleteAsync(url, cancellationToken);
+            var duration = DateTime.Now - requestTime;
+
+            Logger.Debug("Received {0} status code after {1} ms from {2}: {3}", response.StatusCode, duration.TotalMilliseconds, "DELETE", url);
 
             response.EnsureSuccessStatusCode();
 
