@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImgurPortable.Entities;
 using ImgurPortable.Extensions;
+using ImgurPortable.Logging;
 using Newtonsoft.Json;
 
 namespace ImgurPortable
@@ -23,12 +24,17 @@ namespace ImgurPortable
 
         internal readonly HttpClient HttpClient;
         internal readonly HttpClient AnonHttpClient;
+        internal readonly ILogger Logger;
 
         public ImgurClient(string clientId, string clientSecret)
-            : this(clientId, clientSecret, null)
+            : this(clientId, clientSecret, new NullLogger())
         { }
 
-        public ImgurClient(string clientId, string clientSecret, HttpMessageHandler handler)
+        public ImgurClient(string clientId, string clientSecret, ILogger logger)
+            : this(clientId, clientSecret, logger, null)
+        { }
+
+        public ImgurClient(string clientId, string clientSecret, ILogger logger, HttpMessageHandler handler)
         {
             if (string.IsNullOrEmpty(clientId))
             {
@@ -45,6 +51,7 @@ namespace ImgurPortable
 
             HttpClient = CreateHttpClient(clientId, handler);
             AnonHttpClient = CreateHttpClient(clientId, handler);
+            Logger = logger ?? new NullLogger();
         }
 
 
@@ -2192,7 +2199,7 @@ namespace ImgurPortable
         #endregion
 
         #region Web calls
-        private static async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> PostResponse<TResponseType>(string endPoint, string method, Dictionary<string, string> postData, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
 
@@ -2200,6 +2207,8 @@ namespace ImgurPortable
             var content = "multipart/form-data; boundary=" + formDataBoundary;
 
             var formData = GetMultipartFormData(postData, formDataBoundary);
+
+            Logger.Debug("POST: {0}", url);
 
             var response = await httpClient.PostAsync(url, new ByteArrayContent(formData), cancellationToken);
 
@@ -2217,9 +2226,11 @@ namespace ImgurPortable
             return item.Response;
         }
 
-        private static async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> GetResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
+
+            Logger.Debug("GET: {0}", url);
 
             var response = await httpClient.GetAsync(url, cancellationToken);
 
@@ -2237,9 +2248,11 @@ namespace ImgurPortable
             return item.Response;
         }
 
-        private static async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<TResponseType> DeleteResponse<TResponseType>(string endPoint, string method, HttpClient httpClient, CancellationToken cancellationToken = default(CancellationToken))
         {
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
+
+            Logger.Debug("DELETE: {0}", url);
 
             var response = await httpClient.DeleteAsync(url, cancellationToken);
 
