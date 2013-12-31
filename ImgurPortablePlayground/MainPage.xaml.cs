@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.IsolatedStorage;
 using System.Windows;
 using System.Windows.Navigation;
@@ -57,31 +56,16 @@ namespace ImgurPortablePlayground
                 }
                 else
                 {
-                    //try
-                    //{
-                    //    var refreshToken = await App.ImgurClient.GetRefreshTokenAsync(token.RefreshToken);
-                    //    settings["AccessToken"] = refreshToken;
-                    //    settings.Save();
+                    try
+                    {
+                        var refreshToken = await App.ImgurClient.GetRefreshTokenAsync(token.RefreshToken);
+                        settings["AccessToken"] = refreshToken;
+                        settings.Save();
 
-                    //    App.ImgurClient.AddAccessToken(refreshToken.Token);
-                    //}
-                    //catch{}
+                        App.ImgurClient.AddAccessToken(refreshToken.Token);
+                    }
+                    catch{}
                 }
-            }
-        }
-
-        private void PhotoButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            var chooser = new PhotoChooserTask();
-            chooser.Completed += ChooserOnCompleted;
-            chooser.Show();
-        }
-
-        private async void ChooserOnCompleted(object sender, PhotoResult photoResult)
-        {
-            if (photoResult.Error == null && photoResult.ChosenPhoto != Stream.Null)
-            {
-                var image = await App.ImgurClient.UploadImageAsync(photoResult.ChosenPhoto, name: "halp");
             }
         }
     }

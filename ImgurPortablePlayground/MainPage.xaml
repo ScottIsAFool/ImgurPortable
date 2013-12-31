@@ -38,9 +38,6 @@
                 <Button Content="Action"
                         x:Name="ImageButton"
                         Click="ImageButton_OnClick"/>
-                <Button Content="Upload photo"
-                        x:Name="PhotoButton"
-                        Click="PhotoButton_OnClick"/>
             </StackPanel>
         </Grid>
 
