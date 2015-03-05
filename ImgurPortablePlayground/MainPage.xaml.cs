@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.IsolatedStorage;
 using System.Windows;
 using System.Windows.Navigation;
@@ -16,13 +17,13 @@ namespace ImgurPortablePlayground
         public MainPage()
         {
             InitializeComponent();
-            
+
         }
 
         private void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
             var url = App.ImgurClient.GetAuthenticationUrl(AuthResponseType.Token);
-            new WebBrowserTask{Uri = new Uri(url, UriKind.Absolute)}.Show();
+            new WebBrowserTask { Uri = new Uri(url, UriKind.Absolute) }.Show();
         }
 
         private async void PinButton_OnClick(object sender, RoutedEventArgs e)
@@ -64,8 +65,23 @@ namespace ImgurPortablePlayground
 
                         App.ImgurClient.AddAccessToken(refreshToken.Token);
                     }
-                    catch{}
+                    catch { }
                 }
+            }
+        }
+
+        private void PhotoButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var chooser = new PhotoChooserTask();
+            chooser.Completed += ChooserOnCompleted;
+            chooser.Show();
+        }
+
+        private async void ChooserOnCompleted(object sender, PhotoResult photoResult)
+        {
+            if (photoResult.Error == null && photoResult.ChosenPhoto != null)
+            {
+                var image = await App.ImgurClient.UploadImageAsync(photoResult.ChosenPhoto, name: "halp");
             }
         }
     }

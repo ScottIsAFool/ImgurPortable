@@ -1205,8 +1205,8 @@ namespace ImgurPortable
         }
 
         public async Task<ImageCollection> GetMemesSubgalleryAsync(
-            Sort sort = Sort.Viral, 
-            int? pageNumber = null, 
+            Sort sort = Sort.Viral,
+            int? pageNumber = null,
             DateRange? range = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1792,7 +1792,7 @@ namespace ImgurPortable
 
             return await GetResponse<int>(endPoint, "comments/count", HttpClient, cancellationToken);
         }
-#endregion
+        #endregion
 
         #region Images
         public async Task<Image> UploadImageAsync(Stream image, string albumId = null, string name = null, string title = null, string description = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -1995,19 +1995,19 @@ namespace ImgurPortable
                 case ThumbnailSize.SmallSquare:
                     sizeString = "s";
                     break;
-                    case ThumbnailSize.BigSquare:
+                case ThumbnailSize.BigSquare:
                     sizeString = "b";
                     break;
-                    case ThumbnailSize.SmallThumbnail:
+                case ThumbnailSize.SmallThumbnail:
                     sizeString = "t";
                     break;
-                    case ThumbnailSize.MediumThumbnail:
+                case ThumbnailSize.MediumThumbnail:
                     sizeString = "m";
                     break;
-                    case ThumbnailSize.LargeThumbnail:
+                case ThumbnailSize.LargeThumbnail:
                     sizeString = "l";
                     break;
-                    case ThumbnailSize.HugeThumbnail:
+                case ThumbnailSize.HugeThumbnail:
                     sizeString = "h";
                     break;
             }
@@ -2209,7 +2209,12 @@ namespace ImgurPortable
             var url = string.Format("{0}{1}/{2}", ImgurApiUrlBase, endPoint, method);
             var requestTime = DateTime.Now;
 
-            var response = await httpClient.PostAsync(url, new FormUrlEncodedContent(postData), cancellationToken);
+            var parameters = postData.Aggregate("", (s, pair) =>
+                                                  s + string.Format("{0}{1}={2}", s.Length > 0 ? "&" : "",
+                                                                Uri.EscapeDataString(pair.Key),
+                                                                UriEncode(pair.Value.ToString())));
+
+            var response = await httpClient.PostAsync(url, new StringContent(parameters), cancellationToken);
 
             var duration = DateTime.Now - requestTime;
             Logger.Debug("Received {0} status code after {1} ms from {2}: {3}", response.StatusCode, duration.TotalMilliseconds, "POST", url);
@@ -2329,6 +2334,18 @@ namespace ImgurPortable
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", clientId);
 
             return httpClient;
+        }
+
+        private string UriEncode(string value)
+        {
+            var sb = new StringBuilder();
+
+            for (var i = 0; i < value.Length; i += 32766)
+            {
+                sb.Append(Uri.EscapeDataString(value.Substring(i, Math.Min(32766, value.Length - i))));
+            }
+
+            return sb.ToString();
         }
     }
 }
